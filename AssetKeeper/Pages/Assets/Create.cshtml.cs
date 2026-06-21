@@ -7,19 +7,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 
 namespace AssetKeeper.Pages.Assets;
 
-public class CreateModel : PageModel
+public class CreateModel : BasePageModel
 {
-    private readonly MyDbContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public CreateModel(MyDbContext context, IWebHostEnvironment webHostEnvironment)
+    public CreateModel(MyDbContext context, IWebHostEnvironment webHostEnvironment) 
+        : base(context)
     {
-        _context = context;
         _webHostEnvironment = webHostEnvironment;
     }
 
@@ -34,24 +31,26 @@ public class CreateModel : PageModel
         await LoadDropdowns();
     }
 
+    // مهم: new اضافه شود
+    public new async Task<JsonResult> OnGetSearchCategoriesAsync(string term)
+        => await base.OnGetSearchCategoriesAsync(term);
+
+    public new async Task<JsonResult> OnGetSearchBrandsAsync(string term)
+        => await base.OnGetSearchBrandsAsync(term);
+        
     public async Task<IActionResult> OnPostAsync()
     {
         ModelState.Remove("Asset.Category");
         ModelState.Remove("Asset.Brand");
 
-        // بررسی تکراری بودن کد اموال
+        // بررسی تکراری بودن
         if (await _context.Assets.AnyAsync(a => a.AssetCode == Asset.AssetCode))
-        {
             ModelState.AddModelError("Asset.AssetCode", "این کد اموال قبلاً ثبت شده است.");
-        }
 
-        // بررسی تکراری بودن سریال
         if (!string.IsNullOrWhiteSpace(Asset.SerialNumber))
         {
             if (await _context.Assets.AnyAsync(a => a.SerialNumber == Asset.SerialNumber))
-            {
                 ModelState.AddModelError("Asset.SerialNumber", "این شماره سریال قبلاً ثبت شده است.");
-            }
         }
 
         if (!ModelState.IsValid)
@@ -64,9 +63,7 @@ public class CreateModel : PageModel
         if (Asset.ImageFile != null && Asset.ImageFile.Length > 0)
         {
             var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "assets");
-
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
+            Directory.CreateDirectory(uploadsFolder);
 
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + Asset.ImageFile.FileName;
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -78,16 +75,18 @@ public class CreateModel : PageModel
 
             Asset.ImagePath = "/images/assets/" + uniqueFileName;
         }
-        // ========================================================
 
         Asset.Status = AssetStatus.InStock;
+        Asset.CreatedAt = DateTime.Now;
+
         _context.Assets.Add(Asset);
         await _context.SaveChangesAsync();
-        // ثبت ایجاد اولیه اموال
+
+        // ثبت تاریخچه اولیه
         _context.AssetHistory.Add(new AssetHistory
         {
             AssetId = Asset.Id,
-            ChangeType = ChangeType.Other,  // یا یک نوع جدید به نام Created بساز
+            ChangeType = ChangeType.Other,
             OldValue = "-",
             NewValue = "ثبت اولیه اموال",
             ChangedByEmployeeId = null,
@@ -95,6 +94,7 @@ public class CreateModel : PageModel
         });
 
         await _context.SaveChangesAsync();
+
         TempData["Success"] = "اموال با موفقیت ثبت شد.";
         return RedirectToPage("Index");
     }
@@ -104,4 +104,5 @@ public class CreateModel : PageModel
         Categories = new SelectList(await _context.Categories.OrderBy(c => c.Name).ToListAsync(), "Id", "Name");
         Brands = new SelectList(await _context.Brands.OrderBy(b => b.Name).ToListAsync(), "Id", "Name");
     }
+
 }

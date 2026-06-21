@@ -1,0 +1,65 @@
+{
+    "Owners": {
+      "ناواکو": "Navaco",
+      "شرکت ناواکو": "Navaco",
+      "navaco": "Navaco",
+      "navako": "Navaco",
+      "naavaaco": "Navaco",
+      "naavaako": "Navaco",
+      "بانک مسکن": "MaskanBank",
+      "مسکن بانک": "MaskanBank",
+      "maskanbank": "MaskanBank",
+      "maskan bank": "MaskanBank",
+      "bank maskan": "MaskanBank",
+      "bankmaskan": "MaskanBank",
+      "maskan": "MaskanBank",
+      "سایر": "Other",
+      "other": "Other"
+    },
+
+    "Statuses": {
+      "انبار": "InStock",
+      "در انبار": "InStock",
+      "تحویل": "Assigned",
+      "تحویلی": "Assigned",
+      "تحویل شده": "Assigned",
+      "تعمیرات": "UnderRepair",
+      "تعمیراتی": "UnderRepair",
+      "در تعمیرات": "UnderRepair",
+      "در تعمیراتی": "UnderRepair",
+      "اسقاط": "Scrapped",
+      "تلف شده": "Scrapped",
+      "مفقود": "Lost",
+      "گم شده": "Lost",
+      "فروش رفته": "Sell",
+      "فروخته شده": "Sell"
+
+    },
+
+    "AccessLevels": {
+      "کاربر عادی": "Normal",
+      "عادی": "Normal",
+      "کاربر معمولی": "Normal",
+      "معمولی": "Normal",
+      "normal": "Normal",
+      "انباردار": "WarehouseKeeper",
+      "warehouse": "WarehouseKeeper",
+      "warehousekeeper": "WarehouseKeeper",
+      "مدیر": "Admin",
+      "مدیر سامانه": "Admin",
+      "مدیر سیستم": "Admin",
+      "admin": "Admin",
+      "ادمین": "Admin",
+      "administrator": "Admin",
+      "غیرفعال": "Disable",
+      "disable": "Disable"
+    },
+ 
+    "Categories": {
+      "لپ تاپ": "لپ‌تاپ",
+      "لپ‌تاپ": "لپ‌تاپ",
+      "موبایل": "موبایل",
+      "گوشی": "موبایل",
+      "تلفن همراه": "موبایل"
+    }
+  }

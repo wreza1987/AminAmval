@@ -64,4 +64,41 @@ public abstract class BasePageModel : PageModel
 
         return new JsonResult(assets);
     }
+
+
+    // ====================== جستجوی دسته‌بندی ======================
+    public async Task<JsonResult> OnGetSearchCategoriesAsync(string term)
+    {
+        if (string.IsNullOrWhiteSpace(term) || term.Length < 2)
+            return new JsonResult(new List<object>());
+
+        term = term.Trim().ToLower();
+
+        var categories = await _context.Categories
+            .Where(c => c.Name.ToLower().Contains(term))
+            .OrderBy(c => c.Name)
+            .Select(c => new { id = c.Id, text = c.Name })
+            .Take(15)
+            .ToListAsync();
+
+        return new JsonResult(categories);
+    }
+
+    // ====================== جستجوی برند ======================
+    public async Task<JsonResult> OnGetSearchBrandsAsync(string term)
+    {
+        if (string.IsNullOrWhiteSpace(term) || term.Length < 2)
+            return new JsonResult(new List<object>());
+
+        term = term.Trim().ToLower();
+
+        var brands = await _context.Brands
+            .Where(b => b.Name.ToLower().Contains(term))
+            .OrderBy(b => b.Name)
+            .Select(b => new { id = b.Id, text = b.Name })
+            .Take(15)
+            .ToListAsync();
+
+        return new JsonResult(brands);
+    }
 }

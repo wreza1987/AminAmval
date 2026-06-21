@@ -42,6 +42,7 @@ public static class DataSeeder
 
         using var workbook = new XLWorkbook();
         var ws = workbook.Worksheets.Add("Data");
+
         for (int i = 0; i < headers.Length; i++)
             ws.Cell(1, i + 1).Value = headers[i];
 
@@ -63,7 +64,11 @@ public static class DataSeeder
 
             if (!await context.Categories.AnyAsync(c => c.Name == name))
             {
-                context.Categories.Add(new Category { Name = name, Description = row.Cell(2).GetString() });
+                context.Categories.Add(new Category 
+                { 
+                    Name = name, 
+                    Description = row.Cell(2).GetString() 
+                });
             }
         }
         await context.SaveChangesAsync();
@@ -82,7 +87,11 @@ public static class DataSeeder
 
             if (!await context.Brands.AnyAsync(b => b.Name == name))
             {
-                context.Brands.Add(new Brand { Name = name, Description = row.Cell(2).GetString() });
+                context.Brands.Add(new Brand 
+                { 
+                    Name = name, 
+                    Description = row.Cell(2).GetString() 
+                });
             }
         }
         await context.SaveChangesAsync();
@@ -110,7 +119,7 @@ public static class DataSeeder
                     Department = row.Cell(5).GetString(),
                     VicePresidency = row.Cell(6).GetString(),
                     StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt.Date : DateTime.Now,
-                    AccessLevel = EmployeeAccessLevel.Normal,   // همیشه Normal
+                    AccessLevel = MappingHelper.NormalizeAccessLevel(row.Cell(8).GetString()),
                     IsActive = true
                 });
             }
@@ -118,7 +127,7 @@ public static class DataSeeder
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedAssets(MyDbContext context)
+        private static async Task SeedAssets(MyDbContext context)
     {
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), SeedFolder, "Assets.xlsx");
         using var wb = new XLWorkbook(filePath);
@@ -134,8 +143,23 @@ public static class DataSeeder
             var categoryName = row.Cell(6).GetString().Trim();
             var brandName = row.Cell(7).GetString().Trim();
 
+            // === ایجاد خودکار دسته‌بندی اگر وجود نداشت ===
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+            if (category == null && !string.IsNullOrEmpty(categoryName))
+            {
+                category = new Category { Name = categoryName, Description = "" };
+                context.Categories.Add(category);
+                await context.SaveChangesAsync();
+            }
+
+            // === ایجاد خودکار برند اگر وجود نداشت ===
             var brand = await context.Brands.FirstOrDefaultAsync(b => b.Name == brandName);
+            if (brand == null && !string.IsNullOrEmpty(brandName))
+            {
+                brand = new Brand { Name = brandName, Description = "" };
+                context.Brands.Add(brand);
+                await context.SaveChangesAsync();
+            }
 
             if (category == null || brand == null) continue;
 
@@ -148,14 +172,14 @@ public static class DataSeeder
                 Description = row.Cell(5).GetString(),
                 CategoryId = category.Id,
                 BrandId = brand.Id,
-                Owner = Enum.TryParse<AssetOwner>(row.Cell(8).GetString(), out var o) ? o : AssetOwner.Unknown,
-                Status = Enum.TryParse<AssetStatus>(row.Cell(9).GetString(), out var s) ? s : AssetStatus.InStock,
+                Owner = MappingHelper.NormalizeOwner(row.Cell(8).GetString()),
+                Status = MappingHelper.NormalizeStatus(row.Cell(9).GetString()),
                 CreatedAt = DateTime.Now
             });
         }
     }
 
-    // ====================== Import Handlers ======================
+    // ====================== Import from Excel ======================
     public static async Task ImportAssetsFromExcelAsync(MyDbContext context, IFormFile file)
     {
         using var stream = file.OpenReadStream();
@@ -172,8 +196,23 @@ public static class DataSeeder
             var categoryName = row.Cell(6).GetString().Trim();
             var brandName = row.Cell(7).GetString().Trim();
 
+            // === ایجاد خودکار دسته‌بندی ===
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+            if (category == null && !string.IsNullOrEmpty(categoryName))
+            {
+                category = new Category { Name = categoryName, Description = "" };
+                context.Categories.Add(category);
+                await context.SaveChangesAsync();
+            }
+
+            // === ایجاد خودکار برند ===
             var brand = await context.Brands.FirstOrDefaultAsync(b => b.Name == brandName);
+            if (brand == null && !string.IsNullOrEmpty(brandName))
+            {
+                brand = new Brand { Name = brandName, Description = "" };
+                context.Brands.Add(brand);
+                await context.SaveChangesAsync();
+            }
 
             if (category == null || brand == null) continue;
 
@@ -186,8 +225,8 @@ public static class DataSeeder
                 Description = row.Cell(5).GetString(),
                 CategoryId = category.Id,
                 BrandId = brand.Id,
-                Owner = Enum.TryParse<AssetOwner>(row.Cell(8).GetString(), out var o) ? o : AssetOwner.Unknown,
-                Status = Enum.TryParse<AssetStatus>(row.Cell(9).GetString(), out var s) ? s : AssetStatus.InStock,
+                Owner = MappingHelper.NormalizeOwner(row.Cell(8).GetString()),
+                Status = MappingHelper.NormalizeStatus(row.Cell(9).GetString()),
                 CreatedAt = DateTime.Now
             });
         }
@@ -216,7 +255,7 @@ public static class DataSeeder
                 Department = row.Cell(5).GetString(),
                 VicePresidency = row.Cell(6).GetString(),
                 StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt.Date : DateTime.Now,
-                AccessLevel = EmployeeAccessLevel.Normal,
+                AccessLevel = MappingHelper.NormalizeAccessLevel(row.Cell(8).GetString()),
                 IsActive = true
             });
         }
