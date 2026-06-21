@@ -1,0 +1,66 @@
+﻿@page
+@using AssetKeeper.Domain.Enums
+@model AssetKeeper.Pages.Employees.IndexModel
+@{
+    ViewData["Title"] = "لیست پرسنل";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>مدیریت پرسنل</h1>
+        <div>
+            <a asp-page="Create" class="btn btn-success me-2">+ افزودن پرسنل جدید</a>
+            
+            <form method="post" asp-page="Index" asp-page-handler="Import" enctype="multipart/form-data" class="d-inline">
+                <div class="input-group" style="width: 380px;">
+                    <input type="file" name="ExcelFile" class="form-control" accept=".xlsx" />
+                    <button type="submit" class="btn btn-primary">آپلود اکسل</button>
+                </div>
+            </form>
+
+            <a href="/Data/Seed/Employees.xlsx" class="btn btn-secondary ms-2" download>دانلود تمپلیت</a>
+        </div>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>کد پرسنلی</th>
+                <th>نام و نام خانوادگی</th>
+                <th>کد ملی</th>
+                <th>واحد / دپارتمان</th>
+                <th>سطح دسترسی</th>
+                <th>وضعیت</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Employees)
+            {
+                <tr>
+                    <td>@item.PersonnelCode</td>
+                    <td>@item.FirstName @item.LastName</td>
+                    <td>@item.NationalCode</td>
+                    <td>@item.Department</td>
+                    <td>
+                        <span class="badge bg-@(
+                                item.AccessLevel == EmployeeAccessLevel.Admin ? "danger" 
+                                : item.AccessLevel == EmployeeAccessLevel.WarehouseKeeper ? "warning"
+                                : item.AccessLevel == EmployeeAccessLevel.Normal ? "success"
+                                : "secondary")">
+                            @EnumHelper.GetDisplayName(item.AccessLevel)
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-@(item.IsActive ? "success" : "secondary")">
+                            @(item.IsActive ? "فعال" : "غیرفعال")
+                        </span>
+                    </td>
+                    <td>
+                        <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">ویرایش</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,147 @@
+﻿@page
+@using AssetKeeper.Domain.Enums
+@using AssetKeeper.Shared
+@model AssetKeeper.Pages.Assets.IndexModel
+@{
+    ViewData["Title"] = "لیست اموال";
+}
+
+<div class="container mt-4">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>لیست اموال</h1>
+        <div>
+            <a asp-page="Create" class="btn btn-success me-2">+ اموال جدید</a>
+            
+            <!-- Import Excel -->
+            <form method="post" asp-page="Index" asp-page-handler="Import" enctype="multipart/form-data" class="d-inline">
+                <div class="input-group" style="width: 380px;">
+                    <input type="file" name="ExcelFile" class="form-control" accept=".xlsx" />
+                    <button type="submit" class="btn btn-primary">آپلود اکسل</button>
+                </div>
+            </form>
+
+            <a href="/Data/Seed/Assets.xlsx" class="btn btn-secondary ms-2" download>دانلود تمپلیت</a>
+        </div>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>کد اموال</th>
+                <th>کد قبلی</th>
+                <th>نام اموال</th>
+                <th>دسته‌بندی</th>
+                <th>برند</th>
+                <th>سریال</th>
+                <th>مالک</th>
+                <th>تحویل‌گیرنده</th>
+                @* <th>توضیحات</th> *@
+                <th>وضعیت</th>
+                <th>تاریخ ثبت</th>
+                <th>آخرین تحویل</th>
+                <th>آخرین عودت</th>
+                <th>عملیات</th>
+                <th>تصویر</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Assets)
+            {
+                <tr>
+                    <td>@item.AssetCode</td>
+                    <td>@item.OldAssetCode</td>
+                    <td>@item.Name</td>
+                    <td>@item.Category?.Name</td>
+                    <td>@item.Brand?.Name</td>
+                    <td>@item.SerialNumber</td>
+                    <td>@EnumHelper.GetDisplayName(item.Owner)</td>
+                    <td>
+                        @{
+                            var lastAssignment = item.Assignments
+                            .Where(a => a.ReturnDate == null)
+                            .OrderByDescending(a => a.AssignmentDate)
+                            .FirstOrDefault();
+                        }
+                        @if (lastAssignment != null)
+                        {
+                            <span>@lastAssignment.Employee?.FirstName @lastAssignment.Employee?.LastName</span>
+                            <br />
+                            <small class="text-muted">@lastAssignment.AssignmentDate.ToShortDateString()</small>
+                        }
+                        else
+                        {
+                            <span class="text-success">در انبار</span>
+                        }
+                    </td>
+                    @* <td>@item.Description</td> *@
+                    <td>
+                        <span class="badge bg-@(
+                            item.Status == AssetStatus.InStock ? "info"
+                            : item.Status == AssetStatus.Assigned ? "success"
+                            : item.Status == AssetStatus.UnderRepair ? "warning"
+                            : item.Status == AssetStatus.Scrapped ? "danger"
+                            : "dark")">
+                            @EnumHelper.GetDisplayName(item.Status)
+                        </span>
+                    </td>
+                    
+                    <td><small>@item.CreatedAt.ToString("yyyy/MM/dd")</small></td>
+
+                    <td>
+                        @{
+                            var lastAssign = item.Assignments.OrderByDescending(a => a.AssignmentDate).FirstOrDefault();
+                        }
+                        @if (lastAssign != null)
+                        {
+                            <small>@lastAssign.AssignmentDate.ToString("yyyy/MM/dd")</small>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+
+                    <td>
+                        @{
+                            var lastReturn = item.Assignments.Where(a => a.ReturnDate != null)
+                            .OrderByDescending(a => a.ReturnDate).FirstOrDefault();
+                        }
+                        @if (lastReturn?.ReturnDate != null)
+                        {
+                            <small>@lastReturn.ReturnDate?.ToString("yyyy/MM/dd")</small>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+
+
+                    <td>
+                        <a asp-page="Edit" asp-route-id="@item.Id" class="@ThemeColors.Buttons.Warning btn-sm">ویرایش</a>
+                        <a asp-page="Details" asp-route-id="@item.Id" class="@ThemeColors.Buttons.Info btn-sm">جزئیات</a>
+                        <a asp-page="Status" asp-route-id="@item.Id" class="@ThemeColors.Buttons.Primary btn-sm">وضعیت</a>
+                    </td>
+
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@item.ImagePath" alt="تصویر" style="width: 50px; height: 50px; object-fit: cover;" class="img-thumbnail" />
+                        }
+                        else
+                        {
+                            <span class="text-muted">بدون تصویر</span>
+                        }
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

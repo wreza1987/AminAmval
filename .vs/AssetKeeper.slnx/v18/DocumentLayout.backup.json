@@ -1,0 +1,143 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|c:\\users\\home\\source\\repos\\assetkeeper\\assetkeeper\\pages\\assets\\status.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|solutionrelative:assetkeeper\\pages\\assets\\status.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|c:\\users\\home\\source\\repos\\assetkeeper\\assetkeeper\\pages\\assets\\status.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|solutionrelative:assetkeeper\\pages\\assets\\status.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|c:\\users\\home\\source\\repos\\assetkeeper\\assetkeeper\\pages\\assets\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|solutionrelative:assetkeeper\\pages\\assets\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|c:\\users\\home\\source\\repos\\assetkeeper\\assetkeeper\\pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|solutionrelative:assetkeeper\\pages\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|c:\\users\\home\\source\\repos\\assetkeeper\\assetkeeper\\pages\\assets\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|solutionrelative:assetkeeper\\pages\\assets\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|c:\\users\\home\\source\\repos\\assetkeeper\\assetkeeper\\pages\\assets\\details.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|solutionrelative:assetkeeper\\pages\\assets\\details.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|c:\\users\\home\\source\\repos\\assetkeeper\\assetkeeper\\pages\\assets\\edit.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E8489ECA-9702-BEBB-4624-7F6EFF581BFE}|AssetKeeper\\AssetKeeper.csproj|solutionrelative:assetkeeper\\pages\\assets\\edit.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Status.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Status.cshtml.cs",
+              "RelativeDocumentMoniker": "AssetKeeper\\Pages\\Assets\\Status.cshtml.cs",
+              "ToolTip": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Status.cshtml.cs",
+              "RelativeToolTip": "AssetKeeper\\Pages\\Assets\\Status.cshtml.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAAowEcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-13T11:40:46.509Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Status.cshtml",
+              "DocumentMoniker": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Status.cshtml",
+              "RelativeDocumentMoniker": "AssetKeeper\\Pages\\Assets\\Status.cshtml",
+              "ToolTip": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Status.cshtml",
+              "RelativeToolTip": "AssetKeeper\\Pages\\Assets\\Status.cshtml",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAowDkAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-13T11:40:34.051Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "AssetKeeper\\Pages\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "AssetKeeper\\Pages\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-13T11:27:11.773Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Details.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Details.cshtml.cs",
+              "RelativeDocumentMoniker": "AssetKeeper\\Pages\\Assets\\Details.cshtml.cs",
+              "ToolTip": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Details.cshtml.cs",
+              "RelativeToolTip": "AssetKeeper\\Pages\\Assets\\Details.cshtml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-13T11:00:18.632Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Details.cshtml",
+              "DocumentMoniker": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Details.cshtml",
+              "RelativeDocumentMoniker": "AssetKeeper\\Pages\\Assets\\Details.cshtml",
+              "ToolTip": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Details.cshtml",
+              "RelativeToolTip": "AssetKeeper\\Pages\\Assets\\Details.cshtml",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAowEcAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-13T08:38:45.826Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Edit.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Edit.cshtml.cs",
+              "RelativeDocumentMoniker": "AssetKeeper\\Pages\\Assets\\Edit.cshtml.cs",
+              "ToolTip": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Edit.cshtml.cs",
+              "RelativeToolTip": "AssetKeeper\\Pages\\Assets\\Edit.cshtml.cs",
+              "ViewState": "AgIAAFUAAAAAAAAAAAAowGAAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-13T08:33:56.507Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Edit.cshtml",
+              "RelativeDocumentMoniker": "AssetKeeper\\Pages\\Assets\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\Home\\source\\repos\\AssetKeeper\\AssetKeeper\\Pages\\Assets\\Edit.cshtml",
+              "RelativeToolTip": "AssetKeeper\\Pages\\Assets\\Edit.cshtml",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAowGoAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-13T08:30:35.926Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

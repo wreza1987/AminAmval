@@ -1,0 +1,103 @@
+﻿@page
+@using AssetKeeper.Shared
+@model AssetKeeper.Pages.Assets.CreateModel
+@{
+    ViewData["Title"] = "ثبت اموال جدید";
+}
+
+<div class="container mt-4">
+    <h2>ثبت اموال جدید</h2>
+    <hr />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <strong>لطفاً خطاها را اصلاح کنید:</strong>
+            @Html.ValidationSummary(true)
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form method="post">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">کد اموال <span class="text-danger">*</span></label>
+                <input asp-for="Asset.AssetCode" class="form-control" required />
+                <span asp-validation-for="Asset.AssetCode" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">نام اموال <span class="text-danger">*</span></label>
+                <input asp-for="Asset.Name" class="form-control" required />
+                <span asp-validation-for="Asset.Name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">دسته‌بندی <span class="text-danger">*</span></label>
+                <select asp-for="Asset.CategoryId" asp-items="Model.Categories" class="form-select">
+                    <option value="">انتخاب کنید...</option>
+                </select>
+                <span asp-validation-for="Asset.CategoryId" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">برند <span class="text-danger">*</span></label>
+                <select asp-for="Asset.BrandId" asp-items="Model.Brands" class="form-select">
+                    <option value="">انتخاب کنید...</option>
+                </select>
+                <span asp-validation-for="Asset.BrandId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">شماره سریال</label>
+                <input asp-for="Asset.SerialNumber" class="form-control" />
+                <span asp-validation-for="Asset.SerialNumber" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">مالک <span class="text-danger">*</span></label>
+                <select asp-for="Asset.Owner" class="form-select">
+                    <option value="Navaco">@EnumHelper.GetDisplayName(AssetOwner.Navaco)</option>
+                    <option value="MaskanBank">@EnumHelper.GetDisplayName(AssetOwner.MaskanBank)</option>
+                    <option value="Other">@EnumHelper.GetDisplayName(AssetOwner.Other)</option>
+                    <option value="Unknown">@EnumHelper.GetDisplayName(AssetOwner.Unknown)</option>
+                </select>
+                <span asp-validation-for="Asset.Owner" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">توضیحات</label>
+            <textarea asp-for="Asset.Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">تصویر کالا</label>
+            <input type="file" asp-for="Asset.ImageFile" class="form-control" accept="image/*" />
+            <span asp-validation-for="Asset.ImageFile" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="@ThemeColors.Custom.Button(40, 167, 69)">ثبت اموال جدید</button>
+            <a asp-page="Index" class="@ThemeColors.Custom.Button(108, 117, 125, textColor: "white")">انصراف</a>
+        </div>
+    </form>
+</div>

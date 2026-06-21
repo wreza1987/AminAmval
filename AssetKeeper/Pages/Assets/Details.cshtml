@@ -1,0 +1,75 @@
+﻿@page
+@model AssetKeeper.Pages.Assets.DetailsModel
+@using AssetKeeper.Shared
+@{
+    ViewData["Title"] = "جزئیات اموال";
+}
+
+<div class="container mt-4">
+    <h2>جزئیات اموال</h2>
+    <hr />
+
+    <div class="row">
+        <!-- ستون راست: مشخصات کالا -->
+        <div class="col-md-5">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h4>@Model.Asset.AssetCode - @Model.Asset.Name</h4>
+                    <hr />
+                    <p><strong>دسته‌بندی:</strong> @Model.Asset.Category?.Name</p>
+                    <p><strong>برند:</strong> @Model.Asset.Brand?.Name</p>
+                    <p><strong>مالک:</strong> @Model.Asset.Owner</p>
+                    <p><strong>سریال:</strong> @Model.Asset.SerialNumber</p>
+                    <p><strong>وضعیت:</strong> @Model.Asset.Status</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ستون چپ: تاریخچه تغییرات (جدول مرتب) -->
+        <div class="col-md-7">
+            <h5>تاریخچه تغییرات</h5>
+            <div class="border bg-light p-3" style="max-height: 620px; overflow-y: auto;">
+                @if (!Model.History.Any())
+                {
+                    <p class="text-muted text-center py-5">هنوز هیچ تغییری ثبت نشده است.</p>
+                }
+                else
+                {
+                    <table class="table table-sm table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 50px;">ردیف</th>
+                                <th style="width: 110px;">تاریخ</th>
+                                <th style="width: 80px;">ساعت</th>
+                                <th>کاربر</th>
+                                <th>نوع تغییر</th>
+                                <th>مقدار قبلی</th>
+                                <th>مقدار جدید</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int rowNumber = 1;
+                            }
+                            @foreach (var log in Model.History.OrderByDescending(h => h.ChangeDate))
+                            {
+                                <tr>
+                                    <td>@rowNumber</td>
+                                    <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
+                                    <td>@log.ChangeDate.ToString("HH:mm")</td>
+                                    <td>@(log.ChangedByEmployee?.FirstName + " " + log.ChangedByEmployee?.LastName ?? "سیستم")</td>
+                                    <td>@AssetKeeper.Shared.EnumHelper.GetDisplayName(log.ChangeType)</td>
+                                    <td>@log.OldValue</td>
+                                    <td>@log.NewValue</td>
+                                </tr>
+                                rowNumber++;
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+    <a asp-page="Index" class="btn btn-secondary mt-3">بازگشت به لیست اموال</a>
+</div>

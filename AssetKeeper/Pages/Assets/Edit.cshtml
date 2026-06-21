@@ -1,0 +1,119 @@
+﻿@page
+@model AssetKeeper.Pages.Assets.EditModel
+@using AssetKeeper.Shared
+@{
+    ViewData["Title"] = "ویرایش اموال";
+}
+
+<div class="container mt-4">
+    <h2>ویرایش اموال</h2>
+    <hr />
+
+    <div class="row">
+        <!-- ستون راست: فرم ویرایش -->
+        <div class="col-md-5">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+
+            <form method="post">
+                <input type="hidden" asp-for="Asset.Id" />
+
+                <div class="mb-3">
+                    <label class="form-label">کد اموال <span class="text-danger">*</span></label>
+                    <input asp-for="Asset.AssetCode" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">نام اموال <span class="text-danger">*</span></label>
+                    <input asp-for="Asset.Name" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">شماره سریال</label>
+                    <input asp-for="Asset.SerialNumber" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">دسته‌بندی</label>
+                    <select asp-for="Asset.CategoryId" asp-items="Model.Categories" class="form-select"></select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">برند</label>
+                    <select asp-for="Asset.BrandId" asp-items="Model.Brands" class="form-select"></select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">مالک</label>
+                    <select asp-for="Asset.Owner" class="form-select">
+                        <option value="Navaco">@EnumHelper.GetDisplayName(AssetOwner.Navaco)</option>
+                        <option value="MaskanBank">@EnumHelper.GetDisplayName(AssetOwner.MaskanBank)</option>
+                        <option value="Other">@EnumHelper.GetDisplayName(AssetOwner.Other)</option>
+                        <option value="Unknown">@EnumHelper.GetDisplayName(AssetOwner.Unknown)</option>
+                    </select>
+                </div>
+
+                <!-- وضعیت فقط نمایش -->
+                <div class="mb-3">
+                    <label class="form-label">وضعیت فعلی</label>
+                    <input type="text" class="form-control bg-light" value="@Model.Asset.Status" readonly />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">یادداشت جدید <span class="text-muted">(به تاریخچه اضافه می‌شود)</span></label>
+                    <textarea asp-for="NewNote" class="form-control" rows="5" placeholder="توضیحات یا یادداشت جدید را اینجا بنویسید..."></textarea>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <button type="submit" class="@ThemeColors.Custom.Button(40, 167, 69)">ثبت تغییرات</button>
+                    <a asp-page="Index" class="@ThemeColors.Custom.Button(108, 117, 125, textColor: "white")">انصراف</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- ستون چپ: تاریخچه تغییرات -->
+        <div class="col-md-7">
+            <h5>تاریخچه تغییرات</h5>
+            <div class="border bg-light p-3" style="max-height: 620px; overflow-y: auto;">
+                @if (!Model.History.Any())
+                {
+                    <p class="text-muted text-center py-5">هنوز هیچ تغییری ثبت نشده است.</p>
+                }
+                else
+                {
+                    <table class="table table-sm table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th style="width:50px">ردیف</th>
+            <th style="width:110px">تاریخ</th>
+            <th style="width:80px">ساعت</th>
+            <th>نوع تغییر</th>
+            <th>مقدار قبلی</th>
+            <th>مقدار جدید</th>
+            <th style="width:130px">کاربر</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int row = 1; }
+        @foreach (var log in Model.History.OrderByDescending(h => h.ChangeDate))
+        {
+            <tr>
+                <td>@row</td>
+                <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
+                <td>@log.ChangeDate.ToString("HH:mm")</td>
+                <td>@AssetKeeper.Shared.EnumHelper.GetDisplayName(log.ChangeType)</td>
+                <td>@log.OldValue</td>
+                <td>@log.NewValue</td>
+                <td>@(log.ChangedByEmployee?.FirstName ?? "سیستم")</td>
+            </tr>
+            row++;
+        }
+    </tbody>
+</table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
