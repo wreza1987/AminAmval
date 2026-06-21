@@ -1,0 +1,73 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.usersecrets
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+.vscode/
+*.sln.cache
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# NuGet
+packages/
+*.nupkg
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# User-specific files
+appsettings.*.json
+secrets.json
+
+# Runtime
+*.dll
+*.exe
+*.pdb
+*.cache
+
+# Entity Framework
+*.edmx
+*.edmx.*
+
+# Migration backups
+Migrations/*_Backup*
+
+# Mac / Linux
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+
+.git
+.idea
+.vs
+temp files
+temp files/*
