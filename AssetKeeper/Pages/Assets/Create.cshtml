@@ -9,59 +9,36 @@
     <h2>ثبت اموال جدید</h2>
     <hr />
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-    }
-
-    @if (!ModelState.IsValid)
-    {
-        <div class="alert alert-danger">
-            <strong>لطفاً خطاها را اصلاح کنید:</strong>
-            @Html.ValidationSummary(true)
-        </div>
-    }
-
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success">@TempData["Success"]</div>
     }
 
-    <form method="post">
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success">@TempData["Success"]</div>
-        }
-
+    <form method="post" enctype="multipart/form-data">
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">کد اموال <span class="text-danger">*</span></label>
                 <input asp-for="Asset.AssetCode" class="form-control" required />
-                <span asp-validation-for="Asset.AssetCode" class="text-danger"></span>
             </div>
-
             <div class="col-md-6 mb-3">
                 <label class="form-label">نام اموال <span class="text-danger">*</span></label>
                 <input asp-for="Asset.Name" class="form-control" required />
-                <span asp-validation-for="Asset.Name" class="text-danger"></span>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">دسته‌بندی <span class="text-danger">*</span></label>
-                <input type="text" id="searchCategory" class="form-control" placeholder="نام دسته‌بندی را تایپ کنید..." required />
+                <input type="text" id="searchCategory" class="form-control" placeholder="نام دسته‌بندی را تایپ کنید..." />
                 <select id="CategorySelect" class="form-select mt-2" style="display:none;"></select>
                 <input type="hidden" asp-for="Asset.CategoryId" id="CategoryId" />
-                <button type="button" id="addNewCategoryBtn" class="btn btn-sm btn-outline-success mt-1" style="display:none;">+ ایجاد دسته‌بندی جدید</button>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label class="form-label">برند <span class="text-danger">*</span></label>
-                <input type="text" id="searchBrand" class="form-control" placeholder="نام برند را تایپ کنید..." required />
+                <input type="text" id="searchBrand" class="form-control" placeholder="نام برند را تایپ کنید..." />
                 <select id="BrandSelect" class="form-select mt-2" style="display:none;"></select>
                 <input type="hidden" asp-for="Asset.BrandId" id="BrandId" />
-                <button type="button" id="addNewBrandBtn" class="btn btn-sm btn-outline-success mt-1" style="display:none;">+ ایجاد برند جدید</button>
             </div>
         </div>
 
@@ -69,19 +46,21 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">شماره سریال</label>
                 <input asp-for="Asset.SerialNumber" class="form-control" />
-                <span asp-validation-for="Asset.SerialNumber" class="text-danger"></span>
             </div>
-
             <div class="col-md-6 mb-3">
-                <label class="form-label">مالک <span class="text-danger">*</span></label>
+                <label class="form-label">مالک</label>
                 <select asp-for="Asset.Owner" class="form-select">
-                    <option value="Navaco">@EnumHelper.GetDisplayName(AssetOwner.Navaco)</option>
-                    <option value="MaskanBank">@EnumHelper.GetDisplayName(AssetOwner.MaskanBank)</option>
-                    <option value="Other">@EnumHelper.GetDisplayName(AssetOwner.Other)</option>
-                    <option value="Unknown">@EnumHelper.GetDisplayName(AssetOwner.Unknown)</option>
+                    <option value="Navaco">ناواکو</option>
+                    <option value="MaskanBank">مسکن بانک</option>
+                    <option value="Other">سایر</option>
+                    <option value="Unknown">نامشخص</option>
                 </select>
-                <span asp-validation-for="Asset.Owner" class="text-danger"></span>
             </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">تصویر کالا</label>
+            <input type="file" asp-for="Asset.ImageFile" class="form-control" accept="image/*" />
         </div>
 
         <div class="mb-3">
@@ -89,170 +68,77 @@
             <textarea asp-for="Asset.Description" class="form-control" rows="3"></textarea>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">تصویر کالا</label>
-            <input type="file" asp-for="Asset.ImageFile" class="form-control" accept="image/*" />
-            <span asp-validation-for="Asset.ImageFile" class="text-danger"></span>
-        </div>
-
         <div class="d-flex gap-3">
             <button type="submit" class="@ThemeColors.Custom.Button(40, 167, 69)">ثبت اموال جدید</button>
             <a asp-page="Index" class="@ThemeColors.Custom.Button(108, 117, 125, textColor: "white")">انصراف</a>
         </div>
     </form>
-
-
-    <script>
-        // جستجوی دسته‌بندی
-        setupSearch('#searchCategory', '#CategorySelect', '#CategoryId', '#addNewCategory', 'Category');
-        setupSearch('#searchBrand', '#BrandSelect', '#BrandId', '#addNewBrand', 'Brand');
-
-        function setupSearch(inputId, selectId, hiddenId, addBtnId, type) {
-            let timeout;
-            $(inputId).on('input', function () {
-                clearTimeout(timeout);
-                const term = $(this).val().trim();
-
-                $(addBtnId).hide();
-
-                if (term.length < 2) {
-                    $(selectId).hide();
-                    return;
-                }
-
-                timeout = setTimeout(() => {
-                    const handler = type === 'Category' ? 'SearchCategories' : 'SearchBrands';
-                    $.get(`?handler=${handler}&term=${encodeURIComponent(term)}`, function (data) {
-                        const select = $(selectId);
-                        select.empty().append('<option value="">انتخاب کنید...</option>');
-
-                        data.forEach(item => {
-                            select.append(`<option value="${item.id}">${item.text}</option>`);
-                        });
-
-                        select.show();
-
-                        if (data.length === 0) {
-                            $(addBtnId).show();
-                        }
-                    });
-                }, 250);
-            });
-
-            $(selectId).on('change', function () {
-                $(hiddenId).val($(this).val());
-            });
-
-            // اضافه کردن جدید
-            $(addBtnId).on('click', function () {
-                const name = $(inputId).val().trim();
-                if (!name) return;
-
-                if (confirm(`آیا دسته‌بندی/برند "${name}" ایجاد شود؟`)) {
-                    // اینجا می‌توانی Ajax برای ایجاد فوری بفرستی (بعداً پیشرفته‌تر می‌کنیم)
-                    alert(`"${name}" ایجاد شد. لطفاً صفحه را Refresh کنید یا دوباره جستجو کنید.`);
-                    // فعلاً ساده: کاربر دستی اضافه کند
-                }
-            });
-        }
-    </script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        function setupAutocomplete(inputId, selectId, hiddenId, addBtnId, handlerName) {
-            let timeout;
-
-            $(inputId).on('input', function () {
-                clearTimeout(timeout);
-                const term = $(this).val().trim();
-                $(addBtnId).hide();
-
-                if (term.length < 2) {
-                    $(selectId).hide();
-                    return;
-                }
-
-                timeout = setTimeout(() => {
-                    $.get(`?handler=${handlerName}&term=${encodeURIComponent(term)}`, function (data) {
-                        const select = $(selectId);
-                        select.empty().append('<option value="">انتخاب کنید...</option>');
-
-                        data.forEach(item => {
-                            select.append(`<option value="${item.id}">${item.text}</option>`);
-                        });
-
-                        select.show();
-
-                        if (data.length === 0) {
-                            $(addBtnId).show();
-                        }
-                    });
-                }, 250);
-            });
-
-            $(selectId).on('change', function () {
-                $(hiddenId).val($(this).val());
-            });
-
-            // ایجاد جدید
-            $(addBtnId).on('click', function () {
-                const name = $(inputId).val().trim();
-                if (!name) return;
-
-                if (confirm(`آیا "${name}" ایجاد شود؟`)) {
-                    // فعلاً ساده - کاربر را به صفحه مربوطه هدایت می‌کنیم
-                    alert(`"${name}" ایجاد شد. لطفاً دوباره جستجو کنید.`);
-                    // بعداً می‌توانیم Ajax اضافه کنیم
-                }
-            });
-        }
-
-        // راه‌اندازی
-        setupAutocomplete('#searchCategory', '#CategorySelect', '#CategoryId', '#addNewCategoryBtn', 'SearchCategories');
-        setupAutocomplete('#searchBrand', '#BrandSelect', '#BrandId', '#addNewBrandBtn', 'SearchBrands');
-    </script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        $(function () {
-            setupSearch('#searchCategory', '#CategorySelect', '#CategoryId', 'SearchCategories');
-            setupSearch('#searchBrand', '#BrandSelect', '#BrandId', 'SearchBrands');
-        });
-
-        function setupSearch(inputSelector, selectSelector, hiddenSelector, handler) {
-            let timeout;
-
-            $(inputSelector).on('input', function () {
-                clearTimeout(timeout);
-                const term = $(this).val().trim();
-
-                if (term.length < 2) {
-                    $(selectSelector).hide();
-                    return;
-                }
-
-                timeout = setTimeout(() => {
-                    $.get(`?handler=${handler}&term=${encodeURIComponent(term)}`, function (data) {
-                        const select = $(selectSelector);
-                        select.empty().append('<option value="">انتخاب کنید...</option>');
-
-                        if (data && data.length > 0) {
-                            data.forEach(item => {
-                                select.append(`<option value="${item.id}">${item.text}</option>`);
-                            });
-                            select.show();
-                        } else {
-                            select.hide();
-                        }
-                    });
-                }, 300);
-            });
-
-            $(selectSelector).on('change', function () {
-                $(hiddenSelector).val(this.value);
-            });
-        }
-    </script>
 </div>
+
+<script>
+    // جستجوی دسته‌بندی
+    let categoryTimeout;
+    document.getElementById('searchCategory').addEventListener('input', function () {
+        clearTimeout(categoryTimeout);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            document.getElementById('CategorySelect').style.display = 'none';
+            return;
+        }
+
+        categoryTimeout = setTimeout(async () => {
+            const response = await fetch(`/Assets/Create?handler=SearchCategories&term=${encodeURIComponent(term)}`);
+            const data = await response.json();
+
+            const select = document.getElementById('CategorySelect');
+            select.innerHTML = '<option value="">انتخاب کنید...</option>';
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.text;
+                select.appendChild(option);
+            });
+
+            select.style.display = 'block';
+        }, 250);
+    });
+
+    document.getElementById('CategorySelect').addEventListener('change', function () {
+        document.getElementById('CategoryId').value = this.value;
+    });
+
+    // جستجوی برند
+    let brandTimeout;
+    document.getElementById('searchBrand').addEventListener('input', function () {
+        clearTimeout(brandTimeout);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            document.getElementById('BrandSelect').style.display = 'none';
+            return;
+        }
+
+        brandTimeout = setTimeout(async () => {
+            const response = await fetch(`/Assets/Create?handler=SearchBrands&term=${encodeURIComponent(term)}`);
+            const data = await response.json();
+
+            const select = document.getElementById('BrandSelect');
+            select.innerHTML = '<option value="">انتخاب کنید...</option>';
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.text;
+                select.appendChild(option);
+            });
+
+            select.style.display = 'block';
+        }, 250);
+    });
+
+    document.getElementById('BrandSelect').addEventListener('change', function () {
+        document.getElementById('BrandId').value = this.value;
+    });
+</script>
