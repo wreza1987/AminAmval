@@ -11,7 +11,7 @@ public abstract class BasePageModel : PageModel
 
     protected BasePageModel(MyDbContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     // ====================== جستجوی آنلاین پرسنل ======================

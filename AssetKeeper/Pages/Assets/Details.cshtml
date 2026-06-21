@@ -57,7 +57,11 @@
                                     <td>@rowNumber</td>
                                     <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
                                     <td>@log.ChangeDate.ToString("HH:mm")</td>
-                                    <td>@(log.ChangedByEmployee?.FirstName + " " + log.ChangedByEmployee?.LastName ?? "سیستم")</td>
+                                    <td>
+                                        @(log.ChangedByEmployee != null ? 
+                                        $"{log.ChangedByEmployee.FirstName} {log.ChangedByEmployee.LastName}" 
+                                        : "سیستم")
+                                    </td>
                                     <td>@AssetKeeper.Shared.EnumHelper.GetDisplayName(log.ChangeType)</td>
                                     <td>@log.OldValue</td>
                                     <td>@log.NewValue</td>

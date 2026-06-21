@@ -76,14 +76,18 @@
 </div>
 
 <script>
-    // جستجوی دسته‌بندی
+    // ====================== دسته‌بندی ======================
     let categoryTimeout;
-    document.getElementById('searchCategory').addEventListener('input', function () {
+    const searchCategory = document.getElementById('searchCategory');
+    const categorySelect = document.getElementById('CategorySelect');
+    const categoryId = document.getElementById('CategoryId');
+
+    searchCategory.addEventListener('input', function () {
         clearTimeout(categoryTimeout);
         const term = this.value.trim();
 
         if (term.length < 2) {
-            document.getElementById('CategorySelect').style.display = 'none';
+            categorySelect.style.display = 'none';
             return;
         }
 
@@ -91,32 +95,41 @@
             const response = await fetch(`/Assets/Create?handler=SearchCategories&term=${encodeURIComponent(term)}`);
             const data = await response.json();
 
-            const select = document.getElementById('CategorySelect');
-            select.innerHTML = '<option value="">انتخاب کنید...</option>';
+            categorySelect.innerHTML = '<option value="">انتخاب کنید...</option>';
 
             data.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item.id;
                 option.textContent = item.text;
-                select.appendChild(option);
+                categorySelect.appendChild(option);
             });
 
-            select.style.display = 'block';
+            categorySelect.style.display = 'block';
         }, 250);
     });
 
-    document.getElementById('CategorySelect').addEventListener('change', function () {
-        document.getElementById('CategoryId').value = this.value;
+    categorySelect.addEventListener('change', function () {
+        if (this.value) {
+            categoryId.value = this.value;
+            // مهم: نمایش نام انتخاب شده در input
+            searchCategory.value = this.options[this.selectedIndex].textContent;
+            categorySelect.style.display = 'none';
+            console.log('Category selected:', this.value);
+        }
     });
 
-    // جستجوی برند
+    // ====================== برند ======================
     let brandTimeout;
-    document.getElementById('searchBrand').addEventListener('input', function () {
+    const searchBrand = document.getElementById('searchBrand');
+    const brandSelect = document.getElementById('BrandSelect');
+    const brandId = document.getElementById('BrandId');
+
+    searchBrand.addEventListener('input', function () {
         clearTimeout(brandTimeout);
         const term = this.value.trim();
 
         if (term.length < 2) {
-            document.getElementById('BrandSelect').style.display = 'none';
+            brandSelect.style.display = 'none';
             return;
         }
 
@@ -124,21 +137,25 @@
             const response = await fetch(`/Assets/Create?handler=SearchBrands&term=${encodeURIComponent(term)}`);
             const data = await response.json();
 
-            const select = document.getElementById('BrandSelect');
-            select.innerHTML = '<option value="">انتخاب کنید...</option>';
+            brandSelect.innerHTML = '<option value="">انتخاب کنید...</option>';
 
             data.forEach(item => {
                 const option = document.createElement('option');
                 option.value = item.id;
                 option.textContent = item.text;
-                select.appendChild(option);
+                brandSelect.appendChild(option);
             });
 
-            select.style.display = 'block';
+            brandSelect.style.display = 'block';
         }, 250);
     });
 
-    document.getElementById('BrandSelect').addEventListener('change', function () {
-        document.getElementById('BrandId').value = this.value;
+    brandSelect.addEventListener('change', function () {
+        if (this.value) {
+            brandId.value = this.value;
+            searchBrand.value = this.options[this.selectedIndex].textContent;
+            brandSelect.style.display = 'none';
+            console.log('Brand selected:', this.value);
+        }
     });
 </script>
