@@ -65,7 +65,10 @@ Thumbs.db
 *.tmp
 *.temp
 
-
+.doc
+.docx
+.xls
+.xlsx
 .git
 .idea
 .vs

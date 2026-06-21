@@ -1,6 +1,7 @@
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace AssetKeeper.Context;
@@ -48,8 +49,7 @@ public static class DataSeeder
         workbook.SaveAs(filePath);
     }
 
-    // ==================== Seed Methods ====================
-
+    // ====================== Seed Initial Data ======================
     private static async Task SeedCategories(MyDbContext context)
     {
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), SeedFolder, "Categories.xlsx");
@@ -63,14 +63,10 @@ public static class DataSeeder
 
             if (!await context.Categories.AnyAsync(c => c.Name == name))
             {
-                context.Categories.Add(new Category
-                {
-                    Name = name,
-                    Description = row.Cell(2).GetString()
-                });
+                context.Categories.Add(new Category { Name = name, Description = row.Cell(2).GetString() });
             }
         }
-        await context.SaveChangesAsync();   // ← مهم: ذخیره جداگانه
+        await context.SaveChangesAsync();
     }
 
     private static async Task SeedBrands(MyDbContext context)
@@ -86,11 +82,7 @@ public static class DataSeeder
 
             if (!await context.Brands.AnyAsync(b => b.Name == name))
             {
-                context.Brands.Add(new Brand
-                {
-                    Name = name,
-                    Description = row.Cell(2).GetString()
-                });
+                context.Brands.Add(new Brand { Name = name, Description = row.Cell(2).GetString() });
             }
         }
         await context.SaveChangesAsync();
@@ -117,9 +109,8 @@ public static class DataSeeder
                     NationalCode = row.Cell(4).GetString(),
                     Department = row.Cell(5).GetString(),
                     VicePresidency = row.Cell(6).GetString(),
-                    StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt : DateTime.Now,
-                    // AccessLevel = Enum.TryParse<EmployeeAccessLevel>(row.Cell(8).GetString(), out var lvl) ? lvl : EmployeeAccessLevel.Normal,
-                    AccessLevel = EmployeeAccessLevel.Normal,
+                    StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt.Date : DateTime.Now,
+                    AccessLevel = EmployeeAccessLevel.Normal,   // همیشه Normal
                     IsActive = true
                 });
             }
@@ -146,11 +137,7 @@ public static class DataSeeder
             var category = await context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
             var brand = await context.Brands.FirstOrDefaultAsync(b => b.Name == brandName);
 
-            if (category == null || brand == null)
-            {
-                Console.WriteLine($"Warning: Category or Brand not found for asset {assetCode}");
-                continue;
-            }
+            if (category == null || brand == null) continue;
 
             context.Assets.Add(new Asset
             {
@@ -161,10 +148,78 @@ public static class DataSeeder
                 Description = row.Cell(5).GetString(),
                 CategoryId = category.Id,
                 BrandId = brand.Id,
-                Owner = Enum.TryParse<AssetOwner>(row.Cell(8).GetString(), out var owner) ? owner : AssetOwner.Unknown,
-                Status = Enum.TryParse<AssetStatus>(row.Cell(9).GetString(), out var status) ? status : AssetStatus.InStock,
+                Owner = Enum.TryParse<AssetOwner>(row.Cell(8).GetString(), out var o) ? o : AssetOwner.Unknown,
+                Status = Enum.TryParse<AssetStatus>(row.Cell(9).GetString(), out var s) ? s : AssetStatus.InStock,
                 CreatedAt = DateTime.Now
             });
         }
+    }
+
+    // ====================== Import Handlers ======================
+    public static async Task ImportAssetsFromExcelAsync(MyDbContext context, IFormFile file)
+    {
+        using var stream = file.OpenReadStream();
+        using var workbook = new XLWorkbook(stream);
+        var sheet = workbook.Worksheet(1);
+
+        foreach (var row in sheet.RowsUsed().Skip(1))
+        {
+            var assetCode = row.Cell(1).GetString().Trim();
+            if (string.IsNullOrEmpty(assetCode)) continue;
+
+            if (await context.Assets.AnyAsync(a => a.AssetCode == assetCode)) continue;
+
+            var categoryName = row.Cell(6).GetString().Trim();
+            var brandName = row.Cell(7).GetString().Trim();
+
+            var category = await context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+            var brand = await context.Brands.FirstOrDefaultAsync(b => b.Name == brandName);
+
+            if (category == null || brand == null) continue;
+
+            context.Assets.Add(new Asset
+            {
+                AssetCode = assetCode,
+                OldAssetCode = row.Cell(2).GetString(),
+                Name = row.Cell(3).GetString(),
+                SerialNumber = row.Cell(4).GetString(),
+                Description = row.Cell(5).GetString(),
+                CategoryId = category.Id,
+                BrandId = brand.Id,
+                Owner = Enum.TryParse<AssetOwner>(row.Cell(8).GetString(), out var o) ? o : AssetOwner.Unknown,
+                Status = Enum.TryParse<AssetStatus>(row.Cell(9).GetString(), out var s) ? s : AssetStatus.InStock,
+                CreatedAt = DateTime.Now
+            });
+        }
+        await context.SaveChangesAsync();
+    }
+
+    public static async Task ImportEmployeesFromExcelAsync(MyDbContext context, IFormFile file)
+    {
+        using var stream = file.OpenReadStream();
+        using var workbook = new XLWorkbook(stream);
+        var sheet = workbook.Worksheet(1);
+
+        foreach (var row in sheet.RowsUsed().Skip(1))
+        {
+            var personnelCode = row.Cell(1).GetString().Trim();
+            if (string.IsNullOrEmpty(personnelCode)) continue;
+
+            if (await context.Employees.AnyAsync(e => e.PersonnelCode == personnelCode)) continue;
+
+            context.Employees.Add(new Employee
+            {
+                PersonnelCode = personnelCode,
+                FirstName = row.Cell(2).GetString(),
+                LastName = row.Cell(3).GetString(),
+                NationalCode = row.Cell(4).GetString(),
+                Department = row.Cell(5).GetString(),
+                VicePresidency = row.Cell(6).GetString(),
+                StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt.Date : DateTime.Now,
+                AccessLevel = EmployeeAccessLevel.Normal,
+                IsActive = true
+            });
+        }
+        await context.SaveChangesAsync();
     }
 }
