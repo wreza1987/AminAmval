@@ -1,0 +1,36 @@
+﻿@page
+@model AssetKeeper.Pages.Brands.IndexModel
+@{
+    ViewData["Title"] = "برندها";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>برندهای اموال</h1>
+        <a asp-page="Create" class="btn btn-success">+ برند جدید</a>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>نام برند</th>
+                <th>توضیحات</th>
+                <th>تعداد اموال</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Brands)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.Assets.Count</td>
+                    <td>
+                        <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">ویرایش</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
