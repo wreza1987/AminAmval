@@ -1,0 +1,131 @@
+@page
+@model AssetKeeper.Pages.Admin.AccessLevelsModel
+@using AssetKeeper.Domain.Enums
+@{
+    ViewData["Title"] = "مدیریت دسترسی‌ها";
+    var levels = new[] { EmployeeAccessLevel.Normal, EmployeeAccessLevel.WarehouseKeeper };
+}
+
+<h3 class="mb-4">🔑 مدیریت دسترسی‌ها</h3>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<!-- بخش ۱: تغییر سطح دسترسی کاربران -->
+<div class="card mb-4">
+    <div class="card-header fw-bold">👥 سطح دسترسی کاربران</div>
+    <div class="card-body">
+        <table class="table table-sm table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>کد پرسنلی</th>
+                    <th>نام</th>
+                    <th>سطح فعلی</th>
+                    <th>تغییر</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var emp in Model.Employees)
+                {
+                    <tr>
+                        <td>@emp.PersonnelCode</td>
+                        <td>@emp.FirstName @emp.LastName</td>
+                        <td>
+                            <span class="badge @(emp.AccessLevel == EmployeeAccessLevel.Admin ? "bg-danger" :
+                                                 emp.AccessLevel == EmployeeAccessLevel.WarehouseKeeper ? "bg-warning text-dark" :
+                                                 emp.AccessLevel == EmployeeAccessLevel.Disable ? "bg-secondary" : "bg-primary")">
+                                @emp.AccessLevel
+                            </span>
+                        </td>
+                        <td>
+                            <form method="post" asp-page-handler="ChangeAccess" class="d-flex gap-2">
+                                <input type="hidden" name="EmployeeId" value="@emp.Id" />
+                                <select name="NewLevel" class="form-select form-select-sm" style="width:auto">
+                                    @foreach (var lvl in Enum.GetValues<EmployeeAccessLevel>())
+                                    {
+                                        @if (emp.AccessLevel == lvl)
+                                        {
+                                            <option value="@lvl" selected>@lvl</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@lvl">@lvl</option>
+                                        }
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary">ذخیره</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- بخش ۲: مدیریت دسترسی صفحات -->
+<div class="card">
+    <div class="card-header fw-bold">📄 دسترسی صفحات به ازای هر سطح</div>
+    <div class="card-body">
+        <table class="table table-sm table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-end">صفحه</th>
+                    @foreach (var lvl in levels)
+                    {
+                        <th>@lvl</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pageKey in Model.PageKeys)
+                {
+                    var pageTitle = Model.Permissions
+                        .FirstOrDefault(p => p.PageKey == pageKey)?.PageTitle ?? pageKey;
+                    <tr>
+                        <td class="text-end">@pageTitle <small class="text-muted">(@pageKey)</small></td>
+                        @foreach (var lvl in levels)
+                        {
+                            var perm = Model.Permissions
+                                .FirstOrDefault(p => p.PageKey == pageKey && p.AccessLevel == lvl);
+                            var isAllowed = perm?.IsAllowed ?? false;
+                            <td>
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input permission-toggle"
+                                           type="checkbox"
+                                           @(isAllowed ? "checked" : "")
+                                           data-page="@pageKey"
+                                           data-level="@lvl" />
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.querySelectorAll('.permission-toggle').forEach(cb => {
+    cb.addEventListener('change', async function() {
+        const res = await fetch('?handler=TogglePermission', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: `pageKey=${this.dataset.page}&level=${this.dataset.level}&isAllowed=${this.checked}`
+        });
+        const data = await res.json();
+        if (!data.success) {
+            this.checked = !this.checked; // برگشت به حالت قبل
+            alert('خطا در ذخیره');
+        }
+    });
+});
+</script>
+}

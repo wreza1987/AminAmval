@@ -261,4 +261,61 @@ public static class DataSeeder
         }
         await context.SaveChangesAsync();
     }
+
+    public static async Task SeedPagePermissionsAsync(MyDbContext context)
+    {
+        if (await context.PagePermissions.AnyAsync()) return;
+
+        var pages = new[]
+        {
+            ("Assets/Index",        "لیست اموال"),
+            ("Assets/Create",       "ثبت اموال جدید"),
+            ("Assets/Edit",         "ویرایش اموال"),
+            ("Assets/Details",      "جزئیات اموال"),
+            ("Assets/Status",       "وضعیت اموال"),
+            ("Categories/Index",    "لیست دسته‌بندی‌ها"),
+            ("Categories/Create",   "ثبت دسته‌بندی"),
+            ("Categories/Edit",     "ویرایش دسته‌بندی"),
+            ("Brands/Index",        "لیست برندها"),
+            ("Brands/Create",       "ثبت برند"),
+            ("Brands/Edit",         "ویرایش برند"),
+            ("Employees/Index",     "لیست پرسنل"),
+            ("Employees/Create",    "ثبت پرسنل"),
+            ("Employees/Edit",      "ویرایش پرسنل"),
+            ("Employees/Details",   "جزئیات پرسنل"),
+            ("Assignments/Index",   "لیست تخصیص‌ها"),
+            ("Assignments/Create",  "تخصیص اموال"),
+            ("Assignments/Return",  "بازگشت اموال"),
+            ("Requests/Index",      "درخواست‌های کاربران"),
+            ("Index",               "داشبورد"),
+        };
+
+        // Normal — فقط حساب من (هیچ‌کدام از صفحات بالا)
+        // WarehouseKeeper — همه به جز Admin/AccessLevels
+        // Admin — همه چیز (در کد جداگانه هندل میشه)
+
+        foreach (var (key, title) in pages)
+        {
+            // کاربر عادی — هیچ‌کدام
+            context.PagePermissions.Add(new PagePermission
+            {
+                PageKey = key,
+                PageTitle = title,
+                AccessLevel = EmployeeAccessLevel.Normal,
+                IsAllowed = false
+            });
+
+            // انباردار — همه به جز Employees/Edit
+            bool warehouseAllowed = key != "Employees/Edit";
+            context.PagePermissions.Add(new PagePermission
+            {
+                PageKey = key,
+                PageTitle = title,
+                AccessLevel = EmployeeAccessLevel.WarehouseKeeper,
+                IsAllowed = warehouseAllowed
+            });
+        }
+
+        await context.SaveChangesAsync();
+    }
 }

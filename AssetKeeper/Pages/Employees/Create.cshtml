@@ -68,13 +68,27 @@
             </div>
         </div>
 
+        <!-- سطح دسترسی فقط با ادمین تعریف می شود -->
+        @{
+            var accessLevel = User.FindFirst("AccessLevel")?.Value;
+            bool isAdmin = accessLevel == "Admin";
+        }
         <div class="mb-3">
             <label class="form-label">سطح دسترسی</label>
-            <select asp-for="Employee.AccessLevel" class="form-select">
-                <option value="Normal">کاربر عادی</option>
-                <option value="WarehouseKeeper">انباردار / جمع‌دار</option>
-                <option value="Admin">مدیر سامانه</option>
-            </select>
+            @if (isAdmin)
+            {
+                <select asp-for="Employee.AccessLevel" class="form-select">
+                    <option value="Normal">کاربر عادی</option>
+                    <option value="WarehouseKeeper">انباردار</option>
+                    <option value="Admin">مدیر سامانه</option>
+                    <option value="Disable">غیرفعال</option>
+                </select>
+            }
+            else
+            {                
+                <input type="hidden" asp-for="Employee.AccessLevel" value="Normal" />
+                <input class="form-control" value="کاربر عادی" disabled />
+            }
         </div>
 
         <div class="d-flex gap-3">

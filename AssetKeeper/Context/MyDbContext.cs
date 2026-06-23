@@ -18,6 +18,7 @@ public class MyDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<AssetAssignment> AssetAssignments { get; set; }
     public DbSet<AssetHistory> AssetHistory { get; set; }
     public DbSet<UserRequest> UserRequests { get; set; }
+    public DbSet<PagePermission> PagePermissions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,7 +32,6 @@ public class MyDbContext : IdentityDbContext<ApplicationUser>
             property.SetCollation("Persian_100_CI_AI");
         }
 
-        // تنظیمات روابط
         modelBuilder.Entity<AssetAssignment>()
             .HasOne(a => a.Asset)
             .WithMany(a => a.Assignments)
@@ -75,5 +75,13 @@ public class MyDbContext : IdentityDbContext<ApplicationUser>
             .WithMany()
             .HasForeignKey(h => h.ChangedByEmployeeId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<UserRequest>()
+            .HasOne(r => r.SenderEmployee)
+            .WithMany()
+            .HasForeignKey(r => r.SenderEmployeeId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
     }
 }

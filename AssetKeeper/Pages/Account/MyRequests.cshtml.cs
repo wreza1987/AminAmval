@@ -49,6 +49,7 @@ public class MyRequestsModel : PageModel
         _context.UserRequests.Add(new UserRequest
         {
             EmployeeId = Employee.Id,
+            SenderEmployeeId = Employee.Id,
             Message = Message,
         });
 
@@ -68,6 +69,7 @@ public class MyRequestsModel : PageModel
 
         Requests = await _context.UserRequests
             .Include(r => r.Employee)
+            .Include(r => r.SenderEmployee)
             .Where(r => r.EmployeeId == user.EmployeeId)
             .OrderBy(r => r.CreatedAt)
             .ToListAsync();

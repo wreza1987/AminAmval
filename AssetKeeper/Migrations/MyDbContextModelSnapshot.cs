@@ -368,6 +368,35 @@ namespace AssetKeeper.Migrations
                     b.ToTable("Employees");
                 });
 
+            modelBuilder.Entity("AssetKeeper.Domain.Entities.PagePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessLevel")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAllowed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PageKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Persian_100_CI_AI");
+
+                    b.Property<string>("PageTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("Persian_100_CI_AI");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PagePermissions");
+                });
+
             modelBuilder.Entity("AssetKeeper.Domain.Entities.UserRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -390,9 +419,14 @@ namespace AssetKeeper.Migrations
                         .HasColumnType("nvarchar(max)")
                         .UseCollation("Persian_100_CI_AI");
 
+                    b.Property<int>("SenderEmployeeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("SenderEmployeeId");
 
                     b.ToTable("UserRequests");
                 });
@@ -614,7 +648,15 @@ namespace AssetKeeper.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AssetKeeper.Domain.Entities.Employee", "SenderEmployee")
+                        .WithMany()
+                        .HasForeignKey("SenderEmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Employee");
+
+                    b.Navigation("SenderEmployee");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
