@@ -17,6 +17,8 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
+                @if (User.Identity?.IsAuthenticated == true)
+                    {
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link" asp-page="/Index">داشبورد</a>
@@ -36,10 +38,25 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-page="/Assignments/Index">تخصیص‌ها</a>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a class="nav-link" asp-page="/Assignments/Create">تخصیص جدید</a>
-                        </li> -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                                👤 حساب من
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" asp-page="/Account/Profile">پروفایل من</a></li>
+                                <li><a class="dropdown-item" asp-page="/Account/MyAssets">اموال من</a></li>
+                                <li><a class="dropdown-item" asp-page="/Account/MyAssetHistory">گردش اموال من</a></li>
+                                <li><a class="dropdown-item" asp-page="/Account/MyRequests">درخواست من</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" asp-page="/Account/Logout">
+                                <button type="submit" class="nav-link btn btn-link text-light">🚪 خروج</button>
+                            </form>
+                        </li>
                     </ul>
+                    }
                 </div>
             </div>
         </nav>

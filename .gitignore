@@ -58,6 +58,8 @@ secrets.json
 
 # Migration backups
 Migrations/*_Backup*
+Migrations
+Migrations/*
 
 # Mac / Linux
 .DS_Store

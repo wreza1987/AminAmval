@@ -17,6 +17,7 @@ public class MyDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Employee> Employees { get; set; }
     public DbSet<AssetAssignment> AssetAssignments { get; set; }
     public DbSet<AssetHistory> AssetHistory { get; set; }
+    public DbSet<UserRequest> UserRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
