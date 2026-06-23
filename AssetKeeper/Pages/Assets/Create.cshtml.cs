@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AssetKeeper.Pages.Assets;
 
+[Authorize]
 public class CreateModel : PageModel   // ← موقتاً از BasePageModel ارث نبرد
 {
     private readonly MyDbContext _context;

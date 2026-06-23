@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AssetKeeper.Context;
 
-public class MyDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+// public class MyDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+// public class MyDbContext : IdentityDbContext<IdentityUser>
+public class MyDbContext : IdentityDbContext<ApplicationUser>
 {
     public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) { }
 

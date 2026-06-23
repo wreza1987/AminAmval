@@ -6,9 +6,11 @@ using AssetKeeper.Context;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AssetKeeper.Pages.Assets;
 
+[Authorize]
 public class StatusModel : BasePageModel
 {
     public StatusModel(MyDbContext context) : base(context) { }

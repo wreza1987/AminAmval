@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using AssetKeeper.Context;
 using AssetKeeper.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AssetKeeper.Pages.Brands;
 
+[Authorize]
 public class IndexModel : PageModel
 {
     private readonly MyDbContext _context;

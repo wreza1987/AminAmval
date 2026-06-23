@@ -38,7 +38,9 @@ public class Employee
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     [Display(Name = "تاریخچه تغییرات")]
-    public string? Description { get; set; }      // ← برای ثبت اتوماتیک تغییرات
+    public string? Description { get; set; }
+
+    public string? IdentityUserId { get; set; }   // لینک به کاربر Identity
 
     public ICollection<AssetAssignment> Assignments { get; set; } = new List<AssetAssignment>();
 }

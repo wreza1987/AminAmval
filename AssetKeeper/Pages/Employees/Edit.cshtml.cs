@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using AssetKeeper.Context;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AssetKeeper.Pages.Employees;
 
+[Authorize]
 public class EditModel : BasePageModel
 {
     public EditModel(MyDbContext context) : base(context) { }

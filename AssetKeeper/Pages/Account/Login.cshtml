@@ -1,0 +1,43 @@
+@page
+@model AssetKeeper.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "ورود به سیستم";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h3 class="text-center mb-4">ورود به امین اموال</h3>
+
+                    @if (Model.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger">@Model.ErrorMessage</div>
+                    }
+
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">کد پرسنلی</label>
+                            <input asp-for="Input.PersonnelCode" class="form-control" autofocus required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">رمز عبور</label>
+                            <input asp-for="Input.Password" type="password" class="form-control" required />
+                        </div>
+                        <div class="form-check mb-4">
+                            <input type="checkbox" asp-for="Input.RememberMe" class="form-check-input" />
+                            <label asp-for="Input.RememberMe" class="form-check-label">مرا به خاطر بسپار</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">ورود</button>
+                    </form>
+
+                    <!-- <div class="text-center text-muted small mt-3">
+                        رمز عبور پیش‌فرض
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

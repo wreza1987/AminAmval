@@ -5,10 +5,12 @@ using AssetKeeper.Context;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace AssetKeeper.Pages.Assets;
 
+[Authorize]
 public class IndexModel : BasePageModel
 {
     public IndexModel(MyDbContext context) : base(context) { }

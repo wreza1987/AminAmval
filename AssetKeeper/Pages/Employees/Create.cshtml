@@ -8,15 +8,19 @@
     <h2>ثبت پرسنل جدید</h2>
     <hr />
 
+    <!-- نمایش پیام موفقیت -->
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     }
 
     @if (!ModelState.IsValid)
     {
         <div class="alert alert-danger">
-            <strong>لطفاً خطاهای زیر را اصلاح کنید:</strong>
+            <strong>لطفاً خطاها را اصلاح کنید:</strong>
             @Html.ValidationSummary(true)
         </div>
     }
@@ -39,12 +43,10 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">نام <span class="text-danger">*</span></label>
                 <input asp-for="Employee.FirstName" class="form-control" required />
-                <span asp-validation-for="Employee.FirstName" class="text-danger"></span>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label">نام خانوادگی <span class="text-danger">*</span></label>
                 <input asp-for="Employee.LastName" class="form-control" required />
-                <span asp-validation-for="Employee.LastName" class="text-danger"></span>
             </div>
         </div>
 
@@ -52,8 +54,14 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">واحد / دپارتمان <span class="text-danger">*</span></label>
                 <input asp-for="Employee.Department" class="form-control" required />
-                <span asp-validation-for="Employee.Department" class="text-danger"></span>
             </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">معاونت</label>
+                <input asp-for="Employee.VicePresidency" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">تاریخ شروع به کار</label>
                 <input asp-for="Employee.StartDate" type="date" class="form-control" />
@@ -63,10 +71,9 @@
         <div class="mb-3">
             <label class="form-label">سطح دسترسی</label>
             <select asp-for="Employee.AccessLevel" class="form-select">
-                <option value="Normal">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Normal)</option>
-                <option value="WarehouseKeeper">@EnumHelper.GetDisplayName(EmployeeAccessLevel.WarehouseKeeper)</option>
-                <option value="Admin">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Admin)</option>
-                <option value="Disable">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Disable)</option>
+                <option value="Normal">کاربر عادی</option>
+                <option value="WarehouseKeeper">انباردار / جمع‌دار</option>
+                <option value="Admin">مدیر سامانه</option>
             </select>
         </div>
 

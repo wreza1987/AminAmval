@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using AssetKeeper.Context;
 using AssetKeeper.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AssetKeeper.Pages.Brands;
 
+[Authorize]
 public class CreateModel : PageModel
 {
     private readonly MyDbContext _context;
