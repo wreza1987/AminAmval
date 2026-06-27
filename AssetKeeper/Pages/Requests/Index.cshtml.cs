@@ -35,17 +35,45 @@ public class IndexModel : PageModel
             .ToListAsync();
     }
 
+    // public async Task<IActionResult> OnPostReplyAsync()
+    // {
+    //     var user = await _userManager.GetUserAsync(User);
+    //     if (user?.EmployeeId == null || string.IsNullOrWhiteSpace(ReplyMessage))
+    //         return RedirectToPage();
+
+    //     _context.UserRequests.Add(new UserRequest
+    //     {
+    //         EmployeeId = ReplyEmployeeId,   // کارمندی که پیامش بوده
+    //         SenderEmployeeId = senderEmployee.Id,   // ← این خط ناقصه
+    //         Message = ReplyMessage,
+    //         // SenderEmployeeId رو از user می‌خونیم در view
+    //     });
+
+    //     await _context.SaveChangesAsync();
+    //     return RedirectToPage();
+    // }
+
     public async Task<IActionResult> OnPostReplyAsync()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user?.EmployeeId == null || string.IsNullOrWhiteSpace(ReplyMessage))
+        if (string.IsNullOrWhiteSpace(ReplyMessage) || ReplyEmployeeId == 0)
+            return RedirectToPage();
+
+        // پیدا کردن کاربر جاری (انباردار/ادمین که جواب می‌دهد)
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (currentUser?.EmployeeId == null)
+            return RedirectToPage();
+
+        var sender = await _context.Employees.FindAsync(currentUser.EmployeeId);
+        if (sender == null)
             return RedirectToPage();
 
         _context.UserRequests.Add(new UserRequest
         {
-            EmployeeId = ReplyEmployeeId,   // کارمندی که پیامش بوده
+            EmployeeId = ReplyEmployeeId,       // گیرنده (کاربر عادی)
+            SenderEmployeeId = sender.Id,        // فرستنده (انباردار/ادمین)
             Message = ReplyMessage,
-            // SenderEmployeeId رو از user می‌خونیم در view
+            CreatedAt = DateTime.Now,
+            IsRead = false
         });
 
         await _context.SaveChangesAsync();

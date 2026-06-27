@@ -22,7 +22,7 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
 
         var brand = await _context.Brands.FindAsync(id);
         if (brand == null) return NotFound();
@@ -33,7 +33,7 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
 
         if (await _context.Brands.AnyAsync(b => b.Name == Brand.Name && b.Id != Brand.Id))
         {

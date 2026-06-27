@@ -32,7 +32,7 @@ public class Employee
     [Display(Name = "تاریخ شروع به کار")]
     public DateTime StartDate { get; set; }
 
-    public bool IsActive { get; set; } = true;
+    // public bool IsActive { get; set; } = true;
     public EmployeeAccessLevel AccessLevel { get; set; } = EmployeeAccessLevel.Normal;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;

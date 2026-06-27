@@ -12,6 +12,21 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+/* ========== دکمه‌های استاندارد امین اموال ========== */
+.btn-ak-primary   { background-color: #1a73e8; color: #fff; border-color: #1a73e8; }
+.btn-ak-success   { background-color: #2e7d32; color: #fff; border-color: #2e7d32; }
+.btn-ak-warning   { background-color: #f57c00; color: #fff; border-color: #f57c00; }
+.btn-ak-danger    { background-color: #c62828; color: #fff; border-color: #c62828; }
+.btn-ak-secondary { background-color: #546e7a; color: #fff; border-color: #546e7a; }
+.btn-ak-info      { background-color: #0277bd; color: #fff; border-color: #0277bd; }
+
+.btn-ak-primary:hover   { background-color: #1557b0; color: #fff; }
+.btn-ak-success:hover   { background-color: #1b5e20; color: #fff; }
+.btn-ak-warning:hover   { background-color: #e65100; color: #fff; }
+.btn-ak-danger:hover    { background-color: #b71c1c; color: #fff; }
+.btn-ak-secondary:hover { background-color: #37474f; color: #fff; }
+.btn-ak-info:hover      { background-color: #01579b; color: #fff; }
+
 html {
   position: relative;
   min-height: 100%;

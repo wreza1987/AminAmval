@@ -31,7 +31,7 @@
                     <td>@item.AssignmentDate.ToShortDateString()</td>
                     <td>@item.Notes</td>
                     <td>
-                        <a asp-page="Return" asp-route-id="@item.Id" class="btn btn-warning btn-sm">عودت</a>
+                        <a asp-page="Return" asp-route-id="@item.Id" class="@ThemeColors.Buttons.WarningSm">عودت</a>
                     </td>
                 </tr>
             }

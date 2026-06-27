@@ -4,6 +4,7 @@ using AssetKeeper.Services;
 using AssetKeeper.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<MyDbContext>()
 .AddDefaultTokenProviders();
 
+// Program.cs — بعد از AddIdentity اضافه کن:
+builder.Services.AddScoped<IClaimsTransformation, AccessLevelClaimsTransformer>();
 
 builder.Services.AddAuthorization(options =>
 {

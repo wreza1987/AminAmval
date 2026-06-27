@@ -5,19 +5,6 @@
     ViewData["Title"] = "لیست پرسنل";
 }
 
-<!-- @if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <pre>@TempData["Success"]</pre>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-} -->
-
 <div class="container mt-4">
     @if (TempData["Success"] != null)
     {
@@ -59,7 +46,6 @@
                 <th>کد ملی</th>
                 <th>واحد / دپارتمان</th>
                 <th>سطح دسترسی</th>
-                <th>وضعیت</th>
                 <th>عملیات</th>
             </tr>
         </thead>
@@ -80,13 +66,9 @@
                             @EnumHelper.GetDisplayName(item.AccessLevel)
                         </span>
                     </td>
+                    
                     <td>
-                        <span class="badge bg-@(item.IsActive ? "success" : "secondary")">
-                            @(item.IsActive ? "فعال" : "غیرفعال")
-                        </span>
-                    </td>
-                    <td>
-                        <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">ویرایش</a>
+                        <a asp-page="Edit" asp-route-id="@item.Id" class="@ThemeColors.Buttons.WarningSm">ویرایش</a>
                     </td>
                 </tr>
             }

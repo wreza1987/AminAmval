@@ -117,7 +117,7 @@ public class ReturnModel : BasePageModel
     private async Task LoadEmployees()
     {
         Employees = new SelectList(await _context.Employees
-            .Where(e => e.IsActive)
+            .Where(e => e.AccessLevel != EmployeeAccessLevel.Disable)
             .Select(e => new { e.Id, Display = e.PersonnelCode + " - " + e.FirstName + " " + e.LastName })
             .ToListAsync(), "Id", "Display");
     }

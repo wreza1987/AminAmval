@@ -16,6 +16,10 @@ public static class DataSeeder
 
         if (await context.Categories.AnyAsync()) return;
 
+        // DataSeeder.SeedAsync — اضافه کن:
+        if (!await context.PagePermissions.AnyAsync())
+            await SeedPagePermissions(context);
+            
         await SeedCategories(context);
         await SeedBrands(context);
         await SeedEmployees(context);
@@ -120,7 +124,7 @@ public static class DataSeeder
                     VicePresidency = row.Cell(6).GetString(),
                     StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt.Date : DateTime.Now,
                     AccessLevel = MappingHelper.NormalizeAccessLevel(row.Cell(8).GetString()),
-                    IsActive = true
+                    // IsActive = true
                 });
             }
         }
@@ -221,7 +225,7 @@ public static class DataSeeder
                 AssetCode = assetCode,
                 OldAssetCode = row.Cell(2).GetString(),
                 Name = row.Cell(3).GetString(),
-                SerialNumber = row.Cell(4).GetString(),
+                SerialNumber = NormalizeSerial(row.Cell(4).GetString()),
                 Description = row.Cell(5).GetString(),
                 CategoryId = category.Id,
                 BrandId = brand.Id,
@@ -231,6 +235,18 @@ public static class DataSeeder
             });
         }
         await context.SaveChangesAsync();
+    }
+
+    private static string? NormalizeSerial(string? serial)
+    {
+        if (string.IsNullOrWhiteSpace(serial)) return "ندارد";
+        var normalized = serial.Trim().ToLower();
+        var emptyValues = new[]
+        {
+            "ندارد", "نامشخص", "نامعلوم", "مخدوش", "تعریف نشده",
+            "0", "na", "none", "null", "-", "n/a", "نا", "ناموجود"
+        };
+        return emptyValues.Contains(normalized) ? "ندارد" : serial.Trim();
     }
 
     public static async Task ImportEmployeesFromExcelAsync(MyDbContext context, IFormFile file)
@@ -256,11 +272,55 @@ public static class DataSeeder
                 VicePresidency = row.Cell(6).GetString(),
                 StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt.Date : DateTime.Now,
                 AccessLevel = MappingHelper.NormalizeAccessLevel(row.Cell(8).GetString()),
-                IsActive = true
+                // IsActive = true
             });
         }
         await context.SaveChangesAsync();
     }
+
+    private static async Task SeedPagePermissions(MyDbContext context)
+    {
+        var pages = new[]
+        {
+            ("Index",                "داشبورد"),
+            ("Assets/Index",         "لیست اموال"),
+            ("Assets/Details",       "جزئیات اموال"),
+            ("Assets/Create",        "ثبت اموال"),
+            ("Assets/Edit",          "ویرایش اموال"),
+            ("Assets/Status",        "تغییر وضعیت"),
+            ("Employees/Index",      "لیست پرسنل"),
+            ("Employees/Create",     "ثبت پرسنل"),
+            ("Employees/Edit",       "ویرایش پرسنل"),
+            ("Assignments/Index",    "تخصیص‌های جاری"),
+            ("Assignments/Create",   "تخصیص جدید"),
+            ("Assignments/Return",   "عودت اموال"),
+            ("Requests/Index",       "درخواست‌های کاربران"),
+            ("Categories/Index",     "دسته‌بندی‌ها"),
+            ("Brands/Index",         "برندها"),
+        };
+
+        foreach (var (key, title) in pages)
+        {
+            // انباردار به همه به جز Admin دسترسی دارد
+            context.PagePermissions.Add(new PagePermission
+            {
+                PageKey = key,
+                PageTitle = title,
+                AccessLevel = EmployeeAccessLevel.WarehouseKeeper,
+                IsAllowed = true
+            });
+            // کاربر عادی فقط به Account دسترسی دارد (که در Middleware exempt شده)
+            context.PagePermissions.Add(new PagePermission
+            {
+                PageKey = key,
+                PageTitle = title,
+                AccessLevel = EmployeeAccessLevel.Normal,
+                IsAllowed = false
+            });
+        }
+        await context.SaveChangesAsync();
+    }
+
 
     public static async Task SeedPagePermissionsAsync(MyDbContext context)
     {

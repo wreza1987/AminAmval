@@ -52,6 +52,18 @@ public class LoginModel : PageModel
             return Page();
         }
 
+    
+        // var employee = appUser.EmployeeId != null
+        //     ? await _context.Employees.FindAsync(appUser.EmployeeId)
+        //     : null;
+
+        // if (employee?.AccessLevel == EmployeeAccessLevel.Disable)
+        // {
+        //     await _signInManager.SignOutAsync();
+        //     ModelState.AddModelError("", "حساب شما غیرفعال است.");
+        //     return Page();
+        // }
+
         // چک غیرفعال بودن
         var employee = await _context.Employees.FindAsync(user.EmployeeId);
         if (employee == null || employee.AccessLevel == EmployeeAccessLevel.Disable)

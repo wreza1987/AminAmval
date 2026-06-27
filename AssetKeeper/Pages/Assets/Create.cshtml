@@ -9,6 +9,16 @@
     <h2>ثبت اموال جدید</h2>
     <hr />
 
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>⚠️ @error.ErrorMessage</div>
+            }
+        </div>
+    }
+
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success">@TempData["Success"]</div>
@@ -26,20 +36,25 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label">دسته‌بندی <span class="text-danger">*</span></label>
-                <input type="text" id="searchCategory" class="form-control" placeholder="نام دسته‌بندی را تایپ کنید..." />
-                <select id="CategorySelect" class="form-select mt-2" style="display:none;"></select>
-                <input type="hidden" asp-for="Asset.CategoryId" id="CategoryId" />
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label class="form-label">برند <span class="text-danger">*</span></label>
-                <input type="text" id="searchBrand" class="form-control" placeholder="نام برند را تایپ کنید..." />
-                <select id="BrandSelect" class="form-select mt-2" style="display:none;"></select>
-                <input type="hidden" asp-for="Asset.BrandId" id="BrandId" />
-            </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">دسته‌بندی <span class="text-danger">*</span></label>
+            <input type="text" id="searchCategory" class="form-control"
+                placeholder="نام دسته‌بندی را تایپ کنید..."
+                value="@Model.SelectedCategoryName" />  @* ✅ مقدار قبلی *@
+            <select id="CategorySelect" class="form-select mt-2" style="display:none;"></select>
+            <input type="hidden" asp-for="Asset.CategoryId" id="CategoryId" />
+            <input type="hidden" asp-for="SelectedCategoryName" />
+            <span asp-validation-for="Asset.CategoryId" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">برند <span class="text-danger">*</span></label>
+            <input type="text" id="searchBrand" class="form-control"
+                placeholder="نام برند را تایپ کنید..."
+                value="@Model.SelectedBrandName" />  @* ✅ مقدار قبلی *@
+            <select id="BrandSelect" class="form-select mt-2" style="display:none;"></select>
+            <input type="hidden" asp-for="Asset.BrandId" id="BrandId" />
+            <input type="hidden" asp-for="SelectedBrandName" />
+            <span asp-validation-for="Asset.BrandId" class="text-danger small"></span>
         </div>
 
         <div class="row">
@@ -69,8 +84,8 @@
         </div>
 
         <div class="d-flex gap-3">
-            <button type="submit" class="@ThemeColors.Custom.Button(40, 167, 69)">ثبت اموال جدید</button>
-            <a asp-page="Index" class="@ThemeColors.Custom.Button(108, 117, 125, textColor: "white")">انصراف</a>
+            <button type="submit" class="@ThemeColors.Buttons.Success">ثبت</button>
+            <a asp-page="Index" class="@ThemeColors.Buttons.Secondary">انصراف</a>
         </div>
     </form>
 </div>

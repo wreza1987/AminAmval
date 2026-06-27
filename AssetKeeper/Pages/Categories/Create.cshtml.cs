@@ -22,12 +22,12 @@ public class CreateModel : PageModel
 
     public void OnGet()
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
 
         if (await _context.Categories.AnyAsync(c => c.Name == Category.Name))
         {

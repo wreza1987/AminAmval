@@ -17,8 +17,10 @@
     @if (!ModelState.IsValid)
     {
         <div class="alert alert-danger">
-            <strong>لطفاً خطاها را اصلاح کنید:</strong>
-            @Html.ValidationSummary(true)
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>⚠️ @error.ErrorMessage</div>
+            }
         </div>
     }
 
@@ -60,20 +62,25 @@
             </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">سطح دسترسی</label>
-            <select asp-for="Employee.AccessLevel" class="form-select">
-                <option value="Normal">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Normal)</option>
-                <option value="WarehouseKeeper">@EnumHelper.GetDisplayName(EmployeeAccessLevel.WarehouseKeeper)</option>
-                <option value="Admin">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Admin)</option>
-                <option value="Disable">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Disable)</option>
-            </select>
-        </div>
 
-        <div class="form-check mb-3">
-            <input asp-for="Employee.IsActive" type="checkbox" class="form-check-input" />
-            <label asp-for="Employee.IsActive" class="form-check-label">فعال</label>
-        </div>
+        @{
+            var accessLevel = User.FindFirst("AccessLevel")?.Value;
+            bool isAdmin = accessLevel == "Admin";
+        }
+        <!-- فقط برای Admin نمایش می‌دهیم -->
+        @if (isAdmin)
+        {
+            <div class="mb-3">
+                <label class="form-label">سطح دسترسی</label>
+                <select asp-for="Employee.AccessLevel" class="form-select">
+                    <option value="Normal">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Normal)</option>
+                    <option value="WarehouseKeeper">@EnumHelper.GetDisplayName(EmployeeAccessLevel.WarehouseKeeper)</option>
+                    <option value="Admin">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Admin)</option>
+                    <option value="Disable">@EnumHelper.GetDisplayName(EmployeeAccessLevel.Disable)</option>
+                </select>
+            </div>
+        }
+
 
         <div class="d-flex gap-3">
             <button type="submit" class="@ThemeColors.Buttons.Primary">ذخیره تغییرات</button>

@@ -1,11 +1,11 @@
 ﻿using AssetKeeper.Context;
 using AssetKeeper.Domain.Entities;
+using AssetKeeper.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-
 
 namespace AssetKeeper.Pages.Employees;
 
@@ -26,31 +26,33 @@ public class CreateModel : PageModel
 
     public void OnGet()
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
         Employee.StartDate = DateTime.Today;
     }
-
 
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid) return Page();
 
-        // چک تکراری
         if (await _context.Employees.AnyAsync(e => e.PersonnelCode == Employee.PersonnelCode))
         {
             ModelState.AddModelError("Employee.PersonnelCode", "این کد پرسنلی قبلاً ثبت شده است.");
             return Page();
         }
 
-        // === ایجاد پرسنل ===
+        // انباردار فقط می‌تواند Normal ثبت کند
+        var currentLevel = User.FindFirst("AccessLevel")?.Value;
+        if (currentLevel != "Admin")
+            Employee.AccessLevel = EmployeeAccessLevel.Normal;
+
         _context.Employees.Add(Employee);
         await _context.SaveChangesAsync();
 
-        // === ایجاد کاربر Identity ===
+        // ایجاد کاربر Identity — پسورد پیش‌فرض = کد ملی
         var user = new ApplicationUser
         {
             UserName = Employee.PersonnelCode,
-            Email = $"{Employee.PersonnelCode}@internal.com", // دلخواه
+            Email = $"{Employee.PersonnelCode}@internal.com",
             PersonnelCode = Employee.PersonnelCode,
             EmployeeId = Employee.Id
         };
@@ -59,17 +61,15 @@ public class CreateModel : PageModel
 
         if (!result.Succeeded)
         {
-            // اگر خطا داشت، لاگ کن
             foreach (var error in result.Errors)
                 ModelState.AddModelError("", error.Description);
             return Page();
         }
 
-        // لینک کردن
         Employee.IdentityUserId = user.Id;
         await _context.SaveChangesAsync();
 
-        TempData["Success"] = "پرسنل و حساب کاربری با موفقیت ایجاد شد. پسورد پیش‌فرض = کد ملی";
+        TempData["Success"] = "پرسنل و حساب کاربری ثبت شد. رمز پیش‌فرض = کد ملی";
         return RedirectToPage("Index");
     }
 }

@@ -28,7 +28,7 @@ public class EditModel : BasePageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
 
         var asset = await _context.Assets
             .Include(a => a.History)
@@ -46,147 +46,167 @@ public class EditModel : BasePageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-    ModelState.Remove("Asset.Category");
-    ModelState.Remove("Asset.Brand");
+        ModelState.Remove("Asset.Category");
+        ModelState.Remove("Asset.Brand");
 
-    if (await _context.Assets.AnyAsync(a => a.AssetCode == Asset.AssetCode && a.Id != Asset.Id))
-        ModelState.AddModelError("Asset.AssetCode", "این کد اموال قبلاً ثبت شده است.");
+        // نرمال‌سازی سریال
+        Asset.SerialNumber = NormalizeSerial(Asset.SerialNumber);
 
-    if (!string.IsNullOrWhiteSpace(Asset.SerialNumber))
-    {
-        if (await _context.Assets.AnyAsync(a => a.SerialNumber == Asset.SerialNumber && a.Id != Asset.Id))
-            ModelState.AddModelError("Asset.SerialNumber", "این شماره سریال قبلاً ثبت شده است.");
-    }
+        if (await _context.Assets.AnyAsync(a => a.AssetCode == Asset.AssetCode && a.Id != Asset.Id))
+            ModelState.AddModelError("Asset.AssetCode", "این کد اموال قبلاً ثبت شده است.");
 
-    if (!ModelState.IsValid)
-    {
-        await LoadDropdowns();
-        return Page();
-    }
-
-    var existing = await _context.Assets
-        .Include(a => a.History)
-        .Include(a => a.Category)
-        .Include(a => a.Brand)
-        .FirstOrDefaultAsync(a => a.Id == Asset.Id);
-
-    if (existing == null) return NotFound();
-
-    if (existing.AssetCode != Asset.AssetCode)
-    {
-        existing.OldAssetCode = existing.AssetCode;
-        _context.AssetHistory.Add(new AssetHistory
+        if (!string.IsNullOrEmpty(Asset.SerialNumber) && Asset.SerialNumber != "ندارد")
         {
-            AssetId = existing.Id,
-            ChangeType = ChangeType.AssetCodeChanged,
-            OldValue = existing.AssetCode,
-            NewValue = Asset.AssetCode,
-            ChangedByEmployeeId = null,
-            ChangeDate = DateTime.Now
-        });
-    }
+            if (await _context.Assets.AnyAsync(a => a.SerialNumber == Asset.SerialNumber && a.Id != Asset.Id))
+                ModelState.AddModelError("Asset.SerialNumber", "این شماره سریال قبلاً ثبت شده است.");
+        }
 
-    if (existing.Name != Asset.Name)
-    {
-        _context.AssetHistory.Add(new AssetHistory
+        if (!ModelState.IsValid)
         {
-            AssetId = existing.Id,
-            ChangeType = ChangeType.NameChanged,
-            OldValue = existing.Name,
-            NewValue = Asset.Name,
-            ChangedByEmployeeId = null,
-            ChangeDate = DateTime.Now
-        });
-    }
+            await LoadDropdowns();
+            var assetForHistory = await _context.Assets
+                .Include(a => a.History)
+                    .ThenInclude(h => h.ChangedByEmployee)
+                .FirstOrDefaultAsync(a => a.Id == Asset.Id);
+            History = assetForHistory?.History.ToList() ?? new();
+            return Page();
+        }
 
-    if (existing.SerialNumber != Asset.SerialNumber)
-    {
-        _context.AssetHistory.Add(new AssetHistory
+        var existing = await _context.Assets
+            .Include(a => a.History)
+            .Include(a => a.Category)
+            .Include(a => a.Brand)
+            .FirstOrDefaultAsync(a => a.Id == Asset.Id);
+
+        if (existing == null) return NotFound();
+
+        if (existing.AssetCode != Asset.AssetCode)
         {
-            AssetId = existing.Id,
-            ChangeType = ChangeType.SerialNumberChanged,
-            OldValue = existing.SerialNumber ?? "-",
-            NewValue = Asset.SerialNumber ?? "-",
-            ChangedByEmployeeId = null,
-            ChangeDate = DateTime.Now
-        });
-    }
+            existing.OldAssetCode = existing.AssetCode;
+            _context.AssetHistory.Add(new AssetHistory
+            {
+                AssetId = existing.Id,
+                ChangeType = ChangeType.AssetCodeChanged,
+                OldValue = existing.AssetCode,
+                NewValue = Asset.AssetCode,
+                ChangedByEmployeeId = null,
+                ChangeDate = DateTime.Now
+            });
+        }
 
-    if (existing.Owner != Asset.Owner)
-    {
-        _context.AssetHistory.Add(new AssetHistory
+        if (existing.Name != Asset.Name)
         {
-            AssetId = existing.Id,
-            ChangeType = ChangeType.OwnerChanged,
-            OldValue = existing.Owner.ToString(),
-            NewValue = Asset.Owner.ToString(),
-            ChangedByEmployeeId = null,
-            ChangeDate = DateTime.Now
-        });
-    }
+            _context.AssetHistory.Add(new AssetHistory
+            {
+                AssetId = existing.Id,
+                ChangeType = ChangeType.NameChanged,
+                OldValue = existing.Name,
+                NewValue = Asset.Name,
+                ChangedByEmployeeId = null,
+                ChangeDate = DateTime.Now
+            });
+        }
 
-    if (existing.CategoryId != Asset.CategoryId)
-    {
-        // نام دسته‌بندی را می‌خوانیم نه Id را
-        var oldCat = await _context.Categories.FindAsync(existing.CategoryId);
-        var newCat = await _context.Categories.FindAsync(Asset.CategoryId);
-        _context.AssetHistory.Add(new AssetHistory
+        if (existing.SerialNumber != Asset.SerialNumber)
         {
-            AssetId = existing.Id,
-            ChangeType = ChangeType.CategoryChanged,
-            OldValue = oldCat?.Name ?? existing.CategoryId.ToString(),
-            NewValue = newCat?.Name ?? Asset.CategoryId.ToString(),
-            ChangedByEmployeeId = null,
-            ChangeDate = DateTime.Now
-        });
-    }
+            _context.AssetHistory.Add(new AssetHistory
+            {
+                AssetId = existing.Id,
+                ChangeType = ChangeType.SerialNumberChanged,
+                OldValue = existing.SerialNumber ?? "-",
+                NewValue = Asset.SerialNumber ?? "-",
+                ChangedByEmployeeId = null,
+                ChangeDate = DateTime.Now
+            });
+        }
 
-    if (existing.BrandId != Asset.BrandId)
-    {
-        var oldBrand = await _context.Brands.FindAsync(existing.BrandId);
-        var newBrand = await _context.Brands.FindAsync(Asset.BrandId);
-        _context.AssetHistory.Add(new AssetHistory
+        if (existing.Owner != Asset.Owner)
         {
-            AssetId = existing.Id,
-            ChangeType = ChangeType.BrandChanged,
-            OldValue = oldBrand?.Name ?? existing.BrandId.ToString(),
-            NewValue = newBrand?.Name ?? Asset.BrandId.ToString(),
-            ChangedByEmployeeId = null,
-            ChangeDate = DateTime.Now
-        });
-    }
+            _context.AssetHistory.Add(new AssetHistory
+            {
+                AssetId = existing.Id,
+                ChangeType = ChangeType.OwnerChanged,
+                OldValue = existing.Owner.ToString(),
+                NewValue = Asset.Owner.ToString(),
+                ChangedByEmployeeId = null,
+                ChangeDate = DateTime.Now
+            });
+        }
 
-    if (!string.IsNullOrWhiteSpace(NewNote))
-    {
-        _context.AssetHistory.Add(new AssetHistory
+        if (existing.CategoryId != Asset.CategoryId)
         {
-            AssetId = existing.Id,
-            ChangeType = ChangeType.NoteAdded,
-            OldValue = "-",
-            NewValue = NewNote,
-            ChangedByEmployeeId = null,
-            ChangeDate = DateTime.Now
-        });
-    }
+            // نام دسته‌بندی را می‌خوانیم نه Id را
+            var oldCat = await _context.Categories.FindAsync(existing.CategoryId);
+            var newCat = await _context.Categories.FindAsync(Asset.CategoryId);
+            _context.AssetHistory.Add(new AssetHistory
+            {
+                AssetId = existing.Id,
+                ChangeType = ChangeType.CategoryChanged,
+                OldValue = oldCat?.Name ?? existing.CategoryId.ToString(),
+                NewValue = newCat?.Name ?? Asset.CategoryId.ToString(),
+                ChangedByEmployeeId = null,
+                ChangeDate = DateTime.Now
+            });
+        }
 
-    // اعمال تغییرات — Status دست نمی‌خوره
-    existing.AssetCode = Asset.AssetCode;
-    existing.Name = Asset.Name;
-    existing.SerialNumber = Asset.SerialNumber;
-    existing.Owner = Asset.Owner;
-    existing.CategoryId = Asset.CategoryId;
-    existing.BrandId = Asset.BrandId;
-    // existing.Status دست نمی‌خوره
+        if (existing.BrandId != Asset.BrandId)
+        {
+            var oldBrand = await _context.Brands.FindAsync(existing.BrandId);
+            var newBrand = await _context.Brands.FindAsync(Asset.BrandId);
+            _context.AssetHistory.Add(new AssetHistory
+            {
+                AssetId = existing.Id,
+                ChangeType = ChangeType.BrandChanged,
+                OldValue = oldBrand?.Name ?? existing.BrandId.ToString(),
+                NewValue = newBrand?.Name ?? Asset.BrandId.ToString(),
+                ChangedByEmployeeId = null,
+                ChangeDate = DateTime.Now
+            });
+        }
 
-    await _context.SaveChangesAsync();
+        if (!string.IsNullOrWhiteSpace(NewNote))
+        {
+            _context.AssetHistory.Add(new AssetHistory
+            {
+                AssetId = existing.Id,
+                ChangeType = ChangeType.NoteAdded,
+                OldValue = "-",
+                NewValue = NewNote,
+                ChangedByEmployeeId = null,
+                ChangeDate = DateTime.Now
+            });
+        }
 
-    TempData["Success"] = "اموال با موفقیت ویرایش شد.";
-    return RedirectToPage("Index");
+        // اعمال تغییرات — Status دست نمی‌خوره
+        existing.AssetCode = Asset.AssetCode;
+        existing.Name = Asset.Name;
+        existing.SerialNumber = Asset.SerialNumber;
+        existing.Owner = Asset.Owner;
+        existing.CategoryId = Asset.CategoryId;
+        existing.BrandId = Asset.BrandId;
+        // existing.Status دست نمی‌خوره
+
+        await _context.SaveChangesAsync();
+
+        TempData["Success"] = "اموال با موفقیت ویرایش شد.";
+        return RedirectToPage("Index");
     }
 
     private async Task LoadDropdowns()
     {
         Categories = new SelectList(await _context.Categories.OrderBy(c => c.Name).ToListAsync(), "Id", "Name");
         Brands = new SelectList(await _context.Brands.OrderBy(b => b.Name).ToListAsync(), "Id", "Name");
+    }
+
+    private static string? NormalizeSerial(string? serial)
+    {
+        if (string.IsNullOrWhiteSpace(serial)) return "ندارد";
+        var normalized = serial.Trim().ToLower();
+        var emptyValues = new[]
+        {
+            "ندارد", "نامشخص", "نامعلوم", "مخدوش", "تعریف نشده",
+            "0", "na", "none", "null", "-", "n/a", "نا", "ناموجود"
+        };
+        return emptyValues.Contains(normalized) ? "ندارد" : serial.Trim();
     }
 }

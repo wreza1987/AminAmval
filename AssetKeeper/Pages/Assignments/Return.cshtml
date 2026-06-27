@@ -8,6 +8,16 @@
     <h2>عودت اموال</h2>
     <hr />
 
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>⚠️ @error.ErrorMessage</div>
+            }
+        </div>
+    }
+
     <div class="card mb-4">
         <div class="card-body">
             <h5>@Model.CurrentAssignment.Asset?.AssetCode - @Model.CurrentAssignment.Asset?.Name</h5>
@@ -53,8 +63,8 @@
         </div>
 
         <div class="d-flex gap-3">
-            <button type="submit" class="btn btn-warning">ثبت عودت</button>
-            <a asp-page="Index" class="btn btn-secondary">انصراف</a>
+            <button type="submit" class="@ThemeColors.Buttons.Warning">ثبت عودت</button>
+            <a asp-page="Index" class="@ThemeColors.Buttons.Secondary">انصراف</a>
         </div>
     </form>
 </div>

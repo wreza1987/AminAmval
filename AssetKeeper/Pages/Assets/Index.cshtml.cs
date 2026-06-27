@@ -19,7 +19,7 @@ public class IndexModel : BasePageModel
 
     public async Task OnGetAsync()
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
 
         Assets = await _context.Assets
             .Include(a => a.Category)

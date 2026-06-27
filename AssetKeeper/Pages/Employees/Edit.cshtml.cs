@@ -18,7 +18,7 @@ public class EditModel : BasePageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
 
         var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
         if (employee == null)
@@ -30,7 +30,7 @@ public class EditModel : BasePageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        TempData.Remove("Success");
+        // TempData.Remove("Success");
 
         if (!ModelState.IsValid)
             return Page();
@@ -47,8 +47,8 @@ public class EditModel : BasePageModel
         if (existing.VicePresidency != Employee.VicePresidency)
             changes += $"- معاونت از '{existing.VicePresidency}' به '{Employee.VicePresidency}' تغییر کرد.\n";
 
-        if (existing.IsActive != Employee.IsActive)
-            changes += $"- وضعیت از {(existing.IsActive ? "فعال" : "غیرفعال")} به {(Employee.IsActive ? "فعال" : "غیرفعال")} تغییر کرد.\n";
+        // if (existing.IsActive != Employee.IsActive)
+        //     changes += $"- وضعیت از {(existing.IsActive ? "فعال" : "غیرفعال")} به {(Employee.IsActive ? "فعال" : "غیرفعال")} تغییر کرد.\n";
 
         if (!string.IsNullOrEmpty(changes))
         {
@@ -62,8 +62,13 @@ public class EditModel : BasePageModel
         existing.Department = Employee.Department;
         existing.VicePresidency = Employee.VicePresidency;
         existing.StartDate = Employee.StartDate;
-        existing.IsActive = Employee.IsActive;
-        existing.AccessLevel = Employee.IsActive ? Employee.AccessLevel : EmployeeAccessLevel.Disable;
+        // existing.IsActive = Employee.IsActive;
+
+        var currentUserAccessLevel = User.FindFirst("AccessLevel")?.Value;
+        if (currentUserAccessLevel == "Admin")
+            existing.AccessLevel = Employee.AccessLevel;
+
+        // existing.AccessLevel = Employee.IsActive ? Employee.AccessLevel : EmployeeAccessLevel.Disable;
 
         await _context.SaveChangesAsync();
 

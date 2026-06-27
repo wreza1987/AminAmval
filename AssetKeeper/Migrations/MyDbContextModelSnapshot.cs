@@ -332,9 +332,6 @@ namespace AssetKeeper.Migrations
                         .HasColumnType("nvarchar(max)")
                         .UseCollation("Persian_100_CI_AI");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")

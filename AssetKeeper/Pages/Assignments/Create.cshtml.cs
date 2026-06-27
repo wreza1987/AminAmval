@@ -23,8 +23,7 @@ public class CreateModel : BasePageModel
 
     public async Task OnGetAsync()
 {
-    TempData.Remove("Success");
-    // فقط تاریخ پیش‌فرض را ست کن — بقیه را دست نزن
+    // TempData.Remove("Success");
     if (AssignmentDto.AssignmentDate == default)
         AssignmentDto.AssignmentDate = DateTime.Today;
 

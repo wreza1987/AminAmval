@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using AssetKeeper.Context;
+using AssetKeeper.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace AssetKeeper.Pages;
@@ -14,7 +15,6 @@ public abstract class BasePageModel : PageModel
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    // ====================== جستجوی آنلاین پرسنل ======================
     public async Task<JsonResult> OnGetSearchEmployeesAsync(string term)
     {
         if (string.IsNullOrWhiteSpace(term) || term.Length < 2)
@@ -23,7 +23,7 @@ public abstract class BasePageModel : PageModel
         term = term.Trim().ToLower();
 
         var employees = await _context.Employees
-            .Where(e => e.IsActive &&
+            .Where(e => e.AccessLevel != EmployeeAccessLevel.Disable &&
                 (e.PersonnelCode.ToLower().Contains(term) ||
                  e.FirstName.ToLower().Contains(term) ||
                  e.LastName.ToLower().Contains(term) ||
@@ -41,7 +41,6 @@ public abstract class BasePageModel : PageModel
         return new JsonResult(employees);
     }
 
-    // ====================== جستجوی آنلاین اموال ======================
     public async Task<JsonResult> OnGetSearchAssetsAsync(string term)
     {
         if (string.IsNullOrWhiteSpace(term) || term.Length < 2)
@@ -65,8 +64,6 @@ public abstract class BasePageModel : PageModel
         return new JsonResult(assets);
     }
 
-
-    // ====================== جستجوی دسته‌بندی ======================
     public async Task<JsonResult> OnGetSearchCategoriesAsync(string term)
     {
         if (string.IsNullOrWhiteSpace(term) || term.Length < 2)
@@ -84,7 +81,6 @@ public abstract class BasePageModel : PageModel
         return new JsonResult(categories);
     }
 
-    // ====================== جستجوی برند ======================
     public async Task<JsonResult> OnGetSearchBrandsAsync(string term)
     {
         if (string.IsNullOrWhiteSpace(term) || term.Length < 2)

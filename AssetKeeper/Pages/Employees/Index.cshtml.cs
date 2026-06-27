@@ -26,8 +26,8 @@ public class IndexModel : PageModel
     public async Task OnGetAsync()
     {
         // پاک کردن تمام پیام‌های قبلی TempData
-        TempData.Remove("Success");
-        TempData.Remove("Error");
+        // TempData.Remove("Success");
+        // TempData.Remove("Error");
 
         Employees = await _context.Employees
             .OrderBy(e => e.PersonnelCode)
@@ -120,7 +120,7 @@ public class IndexModel : PageModel
                 VicePresidency = row.Cell(6).GetString(),
                 StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt : DateTime.Now,
                 AccessLevel = EmployeeAccessLevel.Normal,   // همیشه Normal
-                IsActive = true
+                // IsActive = true
             });
         }
         await context.SaveChangesAsync();

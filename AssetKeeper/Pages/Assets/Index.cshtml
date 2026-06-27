@@ -6,11 +6,29 @@
     ViewData["Title"] = "لیست اموال";
 }
 
+<!-- @if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+} -->
+
 <div class="container mt-4">
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     }
 
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -124,9 +142,9 @@
 
 
                     <td>
-                        <a asp-page="Edit" asp-route-id="@item.Id" class="@ThemeColors.Buttons.Warning btn-sm">ویرایش</a>
-                        <a asp-page="Details" asp-route-id="@item.Id" class="@ThemeColors.Buttons.Info btn-sm">جزئیات</a>
-                        <a asp-page="Status" asp-route-id="@item.Id" class="@ThemeColors.Buttons.Primary btn-sm">وضعیت</a>
+                        <a asp-page="Edit" asp-route-id="@item.Id" class="@ThemeColors.Buttons.WarningSm">ویرایش</a>
+                        <a asp-page="Details" asp-route-id="@item.Id" class="@ThemeColors.Buttons.InfoSm">جزئیات</a>
+                        <a asp-page="Status" asp-route-id="@item.Id" class="@ThemeColors.Buttons.PrimarySm">وضعیت</a>
                     </td>
 
                     <td>
