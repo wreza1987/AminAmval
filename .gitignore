@@ -69,12 +69,21 @@ Thumbs.db
 *.tmp
 *.temp
 
+.git
+.idea
+.vs
+
 .doc
 .docx
 .xls
 .xlsx
-.git
-.idea
-.vs
+.rar
+.zip
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.rar
+*.zip
 temp files
 temp files/*
