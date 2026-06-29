@@ -35,6 +35,7 @@ public class PermissionMiddleware
         "/categories/index",
         "/brands",
         "/brands/index",
+        "/logs/assetlogs",
     };
 
     public PermissionMiddleware(RequestDelegate next)

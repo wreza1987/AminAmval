@@ -5,17 +5,7 @@
 @{
     ViewData["Title"] = "لیست اموال";
 }
-
-<!-- @if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-} -->
-
-<div class="container mt-4">
-
+<div class="container-fluid mt-3">
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show">
@@ -31,135 +21,263 @@
         </div>
     }
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>لیست اموال</h1>
-        <div>
-            <a asp-page="Create" class="btn btn-success me-2">+ اموال جدید</a>
-            
-            <!-- Import Excel -->
-            <form method="post" asp-page="Index" asp-page-handler="Import" enctype="multipart/form-data" class="d-inline">
-                <div class="input-group" style="width: 380px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>لیست اموال <small class="text-muted fs-6">(@Model.TotalCount رکورد)</small></h1>
+        <div class="d-flex gap-2">
+            <a asp-page="Create" class="btn btn-success">+ اموال جدید</a>
+            <form method="post" asp-page-handler="Import" enctype="multipart/form-data" class="d-inline">
+                <div class="input-group">
                     <input type="file" name="ExcelFile" class="form-control" accept=".xlsx" />
                     <button type="submit" class="btn btn-primary">آپلود اکسل</button>
                 </div>
             </form>
-
-            <a href="/Data/Seed/Assets.xlsx" class="btn btn-secondary ms-2" download>دانلود تمپلیت</a>
+            <a href="/Data/Seed/Assets.xlsx" class="btn btn-secondary" download>📥 فایل نمونه</a>
         </div>
     </div>
 
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>کد اموال</th>
-                <th>کد قبلی</th>
-                <th>نام اموال</th>
-                <th>دسته‌بندی</th>
-                <th>برند</th>
-                <th>سریال</th>
-                <th>مالک</th>
-                <th>تحویل‌گیرنده</th>
-                @* <th>توضیحات</th> *@
-                <th>وضعیت</th>
-                <th>تاریخ ثبت</th>
-                <th>آخرین تحویل</th>
-                <th>آخرین عودت</th>
-                <th>عملیات</th>
-                <th>تصویر</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Assets)
-            {
-                <tr>
-                    <td>@item.AssetCode</td>
-                    <td>@item.OldAssetCode</td>
-                    <td>@item.Name</td>
-                    <td>@item.Category?.Name</td>
-                    <td>@item.Brand?.Name</td>
-                    <td>@item.SerialNumber</td>
-                    <td>@EnumHelper.GetDisplayName(item.Owner)</td>
-                    <td>
-                        @{
-                            var lastAssignment = item.Assignments
-                            .Where(a => a.ReturnDate == null)
-                            .OrderByDescending(a => a.AssignmentDate)
-                            .FirstOrDefault();
-                        }
-                        @if (lastAssignment != null)
-                        {
-                            <span>@lastAssignment.Employee?.FirstName @lastAssignment.Employee?.LastName</span>
-                            <br />
-                            <small class="text-muted">@lastAssignment.AssignmentDate.ToShortDateString()</small>
-                        }
-                        else
-                        {
-                            <span class="text-success">در انبار</span>
-                        }
-                    </td>
-                    @* <td>@item.Description</td> *@
-                    <td>
-                        <span class="badge bg-@(
-                            item.Status == AssetStatus.InStock ? "info"
-                            : item.Status == AssetStatus.Assigned ? "success"
-                            : item.Status == AssetStatus.UnderRepair ? "warning"
-                            : item.Status == AssetStatus.Scrapped ? "danger"
-                            : "dark")">
-                            @EnumHelper.GetDisplayName(item.Status)
-                        </span>
-                    </td>
-                    
-                    <td><small>@item.CreatedAt.ToString("yyyy/MM/dd")</small></td>
+    <form method="get">
+        <div class="row g-2 align-items-end mb-3">
 
-                    <td>
-                        @{
-                            var lastAssign = item.Assignments.OrderByDescending(a => a.AssignmentDate).FirstOrDefault();
-                        }
-                        @if (lastAssign != null)
-                        {
-                            <small>@lastAssign.AssignmentDate.ToString("yyyy/MM/dd")</small>
-                        }
-                        else
-                        {
-                            <span class="text-muted">—</span>
-                        }
-                    </td>
+            <!-- کد اموال: دو فیلد -->
+            <div class="col-auto">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <label class="form-label small fw-bold mb-0">کد اموال</label>
+                    <small class="text-muted">(یک فیلد = شامل، دو فیلد = بین)</small>
+                </div>
 
-                    <td>
-                        @{
-                            var lastReturn = item.Assignments.Where(a => a.ReturnDate != null)
-                            .OrderByDescending(a => a.ReturnDate).FirstOrDefault();
-                        }
-                        @if (lastReturn?.ReturnDate != null)
+                <div class="input-group input-group-sm">
+                    <input name="FilterAssetCodeFrom" value="@Model.FilterAssetCodeFrom"
+                           class="form-control" style="width:90px" placeholder="از..." />
+                    <span class="input-group-text">تا</span>
+                    <input name="FilterAssetCodeTo" value="@Model.FilterAssetCodeTo"
+                           class="form-control" style="width:90px" placeholder="تا..." />
+                </div>
+            </div>
+
+            <!-- نام اموال -->
+            <div class="col-auto">
+                <label class="form-label small fw-bold mb-1">نام اموال</label>
+                <input name="FilterName" value="@Model.FilterName"
+                       class="form-control form-control-sm" style="width:150px" placeholder="شامل..." />
+            </div>
+
+            <!-- دسته‌بندی dropdown -->
+            <div class="col-auto">
+                <label class="form-label small fw-bold mb-1">دسته‌بندی</label>
+                <div class="dropdown">
+                    <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                            data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                        @(Model.FilterCategories.Any() ? $"{Model.FilterCategories.Count} انتخاب شده" : "همه")
+                    </button>
+                    <ul class="dropdown-menu p-2" style="min-width:180px;max-height:250px;overflow-y:auto">
+                        <li>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="catAll"
+                                       onchange="toggleAll('cat-cb', this)"
+                                       @(!Model.FilterCategories.Any() ? "checked" : "") />
+                                <label class="form-check-label" for="catAll">همه</label>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider my-1" /></li>
+                        @foreach (var cat in Model.AllCategories)
                         {
-                            <small>@lastReturn.ReturnDate?.ToString("yyyy/MM/dd")</small>
+                            <li>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input cat-cb"
+                                           name="FilterCategories" value="@cat" id="cat_@cat"
+                                           @(Model.FilterCategories.Contains(cat) ? "checked" : "")
+                                           onchange="syncAll('cat-cb','catAll')" />
+                                    <label class="form-check-label" for="cat_@cat">@cat</label>
+                                </div>
+                            </li>
                         }
-                        else
+                    </ul>
+                </div>
+            </div>
+
+            <!-- برند dropdown -->
+            <div class="col-auto">
+                <label class="form-label small fw-bold mb-1">برند</label>
+                <div class="dropdown">
+                    <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                            data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                        @(Model.FilterBrands.Any() ? $"{Model.FilterBrands.Count} انتخاب شده" : "همه")
+                    </button>
+                    <ul class="dropdown-menu p-2" style="min-width:180px;max-height:250px;overflow-y:auto">
+                        <li>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="brandAll"
+                                       onchange="toggleAll('brand-cb', this)"
+                                       @(!Model.FilterBrands.Any() ? "checked" : "") />
+                                <label class="form-check-label" for="brandAll">همه</label>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider my-1" /></li>
+                        @foreach (var brand in Model.AllBrands)
                         {
-                            <span class="text-muted">—</span>
+                            <li>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input brand-cb"
+                                           name="FilterBrands" value="@brand" id="brand_@brand"
+                                           @(Model.FilterBrands.Contains(brand) ? "checked" : "")
+                                           onchange="syncAll('brand-cb','brandAll')" />
+                                    <label class="form-check-label" for="brand_@brand">@brand</label>
+                                </div>
+                            </li>
                         }
-                    </td>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- وضعیت dropdown -->
+            <div class="col-auto">
+                <label class="form-label small fw-bold mb-1">وضعیت</label>
+                <div class="dropdown">
+                    <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                            data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                        @(Model.FilterStatuses.Any() ? $"{Model.FilterStatuses.Count} انتخاب شده" : "همه")
+                    </button>
+                    <ul class="dropdown-menu p-2" style="min-width:160px">
+                        <li>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="statusAll"
+                                       onchange="toggleAll('status-cb', this)"
+                                       @(!Model.FilterStatuses.Any() ? "checked" : "") />
+                                <label class="form-check-label" for="statusAll">همه</label>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider my-1" /></li>
+                        @foreach (var s in Enum.GetValues<AssetStatus>())
+                        {
+                            <li>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input status-cb"
+                                           name="FilterStatuses" value="@s" id="st_@s"
+                                           @(Model.FilterStatuses.Contains(s.ToString()) ? "checked" : "")
+                                           onchange="syncAll('status-cb','statusAll')" />
+                                    <label class="form-check-label" for="st_@s">@EnumHelper.GetDisplayName(s)</label>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- دکمه‌ها -->
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-sm">🔍 فیلتر</button>
+                <a asp-page="Index" class="btn btn-outline-secondary btn-sm">✖ پاک</a>
+            </div>
+        </div>
+    </form>
 
 
-                    <td>
-                        <a asp-page="Edit" asp-route-id="@item.Id" class="@ThemeColors.Buttons.WarningSm">ویرایش</a>
-                        <a asp-page="Details" asp-route-id="@item.Id" class="@ThemeColors.Buttons.InfoSm">جزئیات</a>
-                        <a asp-page="Status" asp-route-id="@item.Id" class="@ThemeColors.Buttons.PrimarySm">وضعیت</a>
-                    </td>
+    @if (!Model.HasSearched)
+    {
+        <div class="alert alert-info mt-3">
+            🔍 برای مشاهده اموال، فیلتر مورد نظر را اعمال کنید.
+        </div>
+    }
+    else if (!Model.Assets.Any())
+    {
+        <div class="alert alert-warning mt-3">هیچ موردی یافت نشد.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>کد اموال</th>
+                        <th>کد قبلی</th>
+                        <th>نام</th>
+                        <th>دسته‌بندی</th>
+                        <th>برند</th>
+                        <th>سریال</th>
+                        <th>مالک</th>
+                        <th>تحویل‌گیرنده</th>
+                        <th>وضعیت</th>
+                        <th>تاریخ ثبت</th>
+                        <th>تصویر</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Assets)
+                    {
+                        var lastActive = item.Assignments.Where(a => a.ReturnDate == null)
+                            .OrderByDescending(a => a.AssignmentDate).FirstOrDefault();
+                        <tr>
+                            <td>@item.AssetCode</td>
+                            <td>@item.OldAssetCode</td>
+                            <td>@item.Name</td>
+                            <td>@item.Category?.Name</td>
+                            <td>@item.Brand?.Name</td>
+                            <td>@item.SerialNumber</td>
+                            <td>@EnumHelper.GetDisplayName(item.Owner)</td>
+                            <td>
+                                @if (lastActive != null)
+                                {
+                                    <span>@lastActive.Employee?.FirstName @lastActive.Employee?.LastName</span>
+                                }
+                                else { <span class="text-success small">در انبار</span> }
+                            </td>
+                            <td>
+                                <span class="badge bg-@(
+                                    item.Status == AssetStatus.InStock ? "info"
+                                    : item.Status == AssetStatus.Assigned ? "success"
+                                    : item.Status == AssetStatus.UnderRepair ? "warning"
+                                    : item.Status == AssetStatus.Scrapped ? "danger"
+                                    : "dark")">
+                                    @EnumHelper.GetDisplayName(item.Status)
+                                </span>
+                            </td>
+                            <td><small>@item.CreatedAt.ToString("yyyy/MM/dd")</small></td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                {
+                                    <img src="@item.ImagePath" style="width:35px;height:35px;object-fit:cover" class="img-thumbnail" />
+                                }
+                                else { <span class="text-muted">—</span> }
+                            </td>
+                            <td>
+                                <a asp-page="Edit" asp-route-id="@item.Id" class="@ThemeColors.Buttons.WarningSm">ویرایش</a>
+                                <a asp-page="Details" asp-route-id="@item.Id" class="@ThemeColors.Buttons.InfoSm">جزئیات</a>
+                                <a asp-page="Status" asp-route-id="@item.Id" class="@ThemeColors.Buttons.PrimarySm">وضعیت</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.ImagePath))
-                        {
-                            <img src="@item.ImagePath" alt="تصویر" style="width: 50px; height: 50px; object-fit: cover;" class="img-thumbnail" />
-                        }
-                        else
-                        {
-                            <span class="text-muted">بدون تصویر</span>
-                        }
-                    </td>
-
-                </tr>
-            }
-        </tbody>
-    </table>
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination pagination-sm justify-content-center">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" asp-page="Index" asp-route-Page="@i"
+                           asp-route-FilterName="@Model.FilterName"
+                           asp-route-FilterAssetCodeFrom="@Model.FilterAssetCodeFrom"
+                           asp-route-FilterAssetCodeTo="@Model.FilterAssetCodeTo">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
 </div>
+
+@section Scripts {
+<script>
+function toggleAll(cls, cb) {
+    document.querySelectorAll('.' + cls).forEach(c => c.checked = cb.checked);
+}
+function syncAll(cls, allId) {
+    const all = document.querySelectorAll('.' + cls);
+    document.getElementById(allId).checked = [...all].every(c => c.checked);
+}
+</script>
+}

@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using AssetKeeper.Context;
+using AssetKeeper.Shared;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -42,14 +43,13 @@ public class StatusModel : BasePageModel
         var oldStatus = existing.Status;
         var newStatus = Asset.Status;
 
-        // === عودت خودکار اگر از Assigned خارج شود ===
+        // عودت خودکار اگر از Assigned خارج شود
         if (oldStatus == AssetStatus.Assigned && newStatus != AssetStatus.Assigned)
         {
             var current = existing.Assignments.FirstOrDefault(a => a.ReturnDate == null);
             if (current != null)
             {
                 current.ReturnDate = DateTime.Now;
-
                 var emp = await _context.Employees.FindAsync(current.EmployeeId);
                 string empLabel = emp != null
                     ? $"{emp.PersonnelCode} - {emp.FirstName} {emp.LastName}"
@@ -67,24 +67,25 @@ public class StatusModel : BasePageModel
             }
         }
 
-        // === ثبت تغییر وضعیت (اگر واقعاً تغییر کرده) ===
-        if (oldStatus != newStatus)
+        // ثبت تغییر وضعیت فقط اگر نه تحویل و نه عودت باشه
+        if (oldStatus != newStatus
+            && newStatus != AssetStatus.Assigned
+            && !(oldStatus == AssetStatus.Assigned && newStatus != AssetStatus.Assigned))
         {
             _context.AssetHistory.Add(new AssetHistory
             {
                 AssetId = existing.Id,
                 ChangeType = ChangeType.StatusChanged,
-                OldValue = oldStatus.ToString(),
-                NewValue = newStatus.ToString(),
+                OldValue = EnumHelper.GetDisplayName(oldStatus),
+                NewValue = EnumHelper.GetDisplayName(newStatus),
                 ChangedByEmployeeId = null,
                 ChangeDate = DateTime.Now
             });
         }
 
-        // === تحویل به پرسنل جدید ===
+        // تحویل به پرسنل جدید
         if (newStatus == AssetStatus.Assigned && NewEmployeeId.HasValue)
         {
-            // بستن تخصیص باز قبلی اگر وجود داشت
             var currentOpen = existing.Assignments.FirstOrDefault(a => a.ReturnDate == null);
             if (currentOpen != null)
                 currentOpen.ReturnDate = DateTime.Now;
@@ -99,7 +100,7 @@ public class StatusModel : BasePageModel
                 AssetId = existing.Id,
                 EmployeeId = NewEmployeeId.Value,
                 AssignmentDate = NewAssignmentDate ?? DateTime.Now,
-                Notes = NewNote ?? "تحویل پس از تغییر وضعیت",
+                Notes = NewNote ?? "تحویل",
                 CreatedAt = DateTime.Now
             });
 
@@ -114,7 +115,6 @@ public class StatusModel : BasePageModel
             });
         }
 
-        // === یادداشت ===
         if (!string.IsNullOrWhiteSpace(NewNote))
         {
             _context.AssetHistory.Add(new AssetHistory

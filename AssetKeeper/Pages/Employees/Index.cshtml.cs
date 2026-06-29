@@ -2,36 +2,101 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using AssetKeeper.Context;
+using AssetKeeper.Shared;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
-using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 
-
 namespace AssetKeeper.Pages.Employees;
-
 
 [Authorize]
 public class IndexModel : PageModel
 {
     private readonly MyDbContext _context;
-
-    public IndexModel(MyDbContext context)
-    {
-        _context = context;
-    }
+    public IndexModel(MyDbContext context) => _context = context;
 
     public IList<Employee> Employees { get; set; } = new List<Employee>();
+    public List<string> AllDepartments { get; set; } = new();
+
+    public int PageNumber { get; set; } = 1;
+    public int TotalPages { get; set; }
+    public int TotalCount { get; set; }
+    private const int PageSize = 20;
+    public bool HasSearched { get; set; } = true; //false;
+
+    [BindProperty(SupportsGet = true)] public string? FilterCodeFrom { get; set; }
+    [BindProperty(SupportsGet = true)] public string? FilterCodeTo { get; set; }
+    [BindProperty(SupportsGet = true)] public string? FilterName { get; set; }
+    [BindProperty(SupportsGet = true)] public string? FilterNationalCode { get; set; }
+    [BindProperty(SupportsGet = true)] public List<string> FilterDepartments { get; set; } = new();
+    [BindProperty(SupportsGet = true)] public List<string> FilterAccessLevels { get; set; } = new();
+    [BindProperty(SupportsGet = true)] public new int Page { get; set; } = 1;
 
     public async Task OnGetAsync()
     {
-        // پاک کردن تمام پیام‌های قبلی TempData
-        // TempData.Remove("Success");
-        // TempData.Remove("Error");
+        AllDepartments = await _context.Employees
+            .Select(e => e.Department).Distinct().OrderBy(d => d).ToListAsync();
 
-        Employees = await _context.Employees
-            .OrderBy(e => e.PersonnelCode)
+        // bool anyFilter = !string.IsNullOrWhiteSpace(FilterCodeFrom) ||
+        //                 !string.IsNullOrWhiteSpace(FilterCodeTo) ||
+        //                 !string.IsNullOrWhiteSpace(FilterName) ||
+        //                 !string.IsNullOrWhiteSpace(FilterNationalCode) ||
+        //                 FilterDepartments.Any() ||
+        //                 FilterAccessLevels.Any();
+
+        // if (!anyFilter) return;
+
+        // HasSearched = true;
+        
+        var all = await _context.Employees
+            .OrderByDescending(e => e.CreatedAt)
             .ToListAsync();
+
+        var filtered = all.AsEnumerable();
+
+        var NormCodeFrom    = TextHelper.Normalize(FilterCodeFrom);
+        var NormCodeTo      = TextHelper.Normalize(FilterCodeTo);
+        var NormName        = TextHelper.Normalize(FilterName);
+        var NormNationalCode = TextHelper.Normalize(FilterNationalCode);
+
+        if (!string.IsNullOrWhiteSpace(NormCodeFrom) && string.IsNullOrWhiteSpace(NormCodeTo))
+            filtered = filtered.Where(e => TextHelper.Normalize(e.PersonnelCode).Contains(NormCodeFrom, StringComparison.OrdinalIgnoreCase));
+        else
+        {
+            if (!string.IsNullOrWhiteSpace(NormCodeFrom))
+                filtered = filtered.Where(e => string.Compare(TextHelper.Normalize(e.PersonnelCode), NormCodeFrom, StringComparison.OrdinalIgnoreCase) >= 0);
+            if (!string.IsNullOrWhiteSpace(NormCodeTo))
+                filtered = filtered.Where(e => string.Compare(TextHelper.Normalize(e.PersonnelCode), NormCodeTo, StringComparison.OrdinalIgnoreCase) <= 0);
+        }
+
+        if (!string.IsNullOrWhiteSpace(NormName))
+            filtered = filtered.Where(e =>
+                TextHelper.Normalize(e.FirstName).Contains(NormName, StringComparison.OrdinalIgnoreCase) ||
+                TextHelper.Normalize(e.LastName).Contains(NormName, StringComparison.OrdinalIgnoreCase));
+
+        if (!string.IsNullOrWhiteSpace(NormNationalCode))
+            filtered = filtered.Where(e => TextHelper.Normalize(e.NationalCode).Contains(NormNationalCode, StringComparison.OrdinalIgnoreCase));
+
+        if (FilterDepartments.Any())
+            filtered = filtered.Where(e => FilterDepartments.Any(fd =>
+                TextHelper.Normalize(fd) == TextHelper.Normalize(e.Department)));
+
+        if (FilterAccessLevels.Any())
+        {
+            var levels = new List<EmployeeAccessLevel>();
+            foreach (var l in FilterAccessLevels)
+                if (Enum.TryParse<EmployeeAccessLevel>(l, out var parsed))
+                    levels.Add(parsed);
+            if (levels.Any())
+                filtered = filtered.Where(e => levels.Contains(e.AccessLevel));
+        }
+
+        var list = filtered.ToList();
+        TotalCount = list.Count;
+        TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
+        PageNumber = Math.Max(1, Math.Min(Page, TotalPages == 0 ? 1 : TotalPages));
+
+        Employees = list.Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
     }
 
     public async Task<IActionResult> OnPostImportAsync(IFormFile ExcelFile)
@@ -42,87 +107,17 @@ public class IndexModel : PageModel
             return RedirectToPage();
         }
 
-        try
-        {
-            await DataSeeder.ImportEmployeesFromExcelAsync(_context, ExcelFile);
-            TempData["Success"] = "پرسنل با موفقیت از فایل اکسل وارد شدند.";
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] = $"خطا در وارد کردن فایل: {ex.Message}";
-        }
+        // ✅ چک کردن سطح دسترسی کاربر جاری
+        bool isWarehouse = User.FindFirst("AccessLevel")?.Value == "WarehouseKeeper";
+
+        var (imported, skipped, error) = await DataSeeder.ImportEmployeesFromExcelAsync(
+            _context, ExcelFile, isWarehouse);
+
+        if (error != null)
+            TempData["Error"] = error;
+        else
+            TempData["Success"] = $"✅ {imported} نفر ثبت شد. {(skipped > 0 ? $"⏭ {skipped} نفر تکراری نادیده گرفته شد." : "")}";
 
         return RedirectToPage();
-    }
-
-
-
-    // Import دستی اموال
-    public static async Task ImportAssetsFromExcelAsync(MyDbContext context, IFormFile file)
-    {
-        using var stream = file.OpenReadStream();
-        using var workbook = new XLWorkbook(stream);
-        var sheet = workbook.Worksheet(1);
-
-        foreach (var row in sheet.RowsUsed().Skip(1))
-        {
-            var assetCode = row.Cell(1).GetString().Trim();
-            if (string.IsNullOrEmpty(assetCode)) continue;
-
-            if (await context.Assets.AnyAsync(a => a.AssetCode == assetCode)) continue;
-
-            var categoryName = row.Cell(6).GetString().Trim();
-            var brandName = row.Cell(7).GetString().Trim();
-
-            var category = await context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
-            var brand = await context.Brands.FirstOrDefaultAsync(b => b.Name == brandName);
-
-            if (category == null || brand == null) continue;
-
-            context.Assets.Add(new Asset
-            {
-                AssetCode = assetCode,
-                OldAssetCode = row.Cell(2).GetString(),
-                Name = row.Cell(3).GetString(),
-                SerialNumber = row.Cell(4).GetString(),
-                Description = row.Cell(5).GetString(),
-                CategoryId = category.Id,
-                BrandId = brand.Id,
-                Owner = Enum.TryParse<AssetOwner>(row.Cell(8).GetString(), out var o) ? o : AssetOwner.Unknown,
-                Status = Enum.TryParse<AssetStatus>(row.Cell(9).GetString(), out var s) ? s : AssetStatus.InStock,
-                CreatedAt = DateTime.Now
-            });
-        }
-        await context.SaveChangesAsync();
-    }
-
-    // Import دستی پرسنل
-    public static async Task ImportEmployeesFromExcelAsync(MyDbContext context, IFormFile file)
-    {
-        using var stream = file.OpenReadStream();
-        using var workbook = new XLWorkbook(stream);
-        var sheet = workbook.Worksheet(1);
-
-        foreach (var row in sheet.RowsUsed().Skip(1))
-        {
-            var personnelCode = row.Cell(1).GetString().Trim();
-            if (string.IsNullOrEmpty(personnelCode)) continue;
-
-            if (await context.Employees.AnyAsync(e => e.PersonnelCode == personnelCode)) continue;
-
-            context.Employees.Add(new Employee
-            {
-                PersonnelCode = personnelCode,
-                FirstName = row.Cell(2).GetString(),
-                LastName = row.Cell(3).GetString(),
-                NationalCode = row.Cell(4).GetString(),
-                Department = row.Cell(5).GetString(),
-                VicePresidency = row.Cell(6).GetString(),
-                StartDate = row.Cell(7).TryGetValue(out DateTime dt) ? dt : DateTime.Now,
-                AccessLevel = EmployeeAccessLevel.Normal,   // همیشه Normal
-                // IsActive = true
-            });
-        }
-        await context.SaveChangesAsync();
     }
 }

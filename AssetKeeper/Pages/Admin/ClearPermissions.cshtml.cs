@@ -38,6 +38,8 @@ public class ClearPermissionsModel : PageModel
             ("Requests/Index",      "درخواست‌های کاربران"),
             ("Categories/Index",    "دسته‌بندی‌ها"),
             ("Brands/Index",        "برندها"),
+            ("Logs/AssetLogs",    "لاگ اموال"),
+            ("Logs/EmployeeLogs", "لاگ پرسنل"),
         };
 
         foreach (var (key, title) in pages)

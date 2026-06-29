@@ -3,77 +3,164 @@
 @using AssetKeeper.Shared
 @{
     ViewData["Title"] = "جزئیات اموال";
+    var assetChanges = Model.History
+        .Where(h => h.ChangeType == ChangeType.AssetCodeChanged
+                 || h.ChangeType == ChangeType.NameChanged
+                 || h.ChangeType == ChangeType.SerialNumberChanged
+                 || h.ChangeType == ChangeType.OwnerChanged
+                 || h.ChangeType == ChangeType.CategoryChanged
+                 || h.ChangeType == ChangeType.BrandChanged
+                 || h.ChangeType == ChangeType.NoteAdded
+                 || h.ChangeType == ChangeType.Other)
+        .OrderByDescending(h => h.ChangeDate).ToList();
+
+    var statusChanges = Model.History
+        .Where(h => h.ChangeType == ChangeType.StatusChanged
+                 || h.ChangeType == ChangeType.AssignedToEmployee
+                 || h.ChangeType == ChangeType.ReturnedFromEmployee)
+        .OrderByDescending(h => h.ChangeDate).ToList();
 }
 
 <div class="container mt-4">
-    <h2>جزئیات اموال</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>جزئیات اموال</h2>
+        <div>
+            <a asp-page="Edit" asp-route-id="@Model.Asset.Id" class="@ThemeColors.Buttons.Warning">ویرایش</a>
+            <a asp-page="Status" asp-route-id="@Model.Asset.Id" class="@ThemeColors.Buttons.Primary">تغییر وضعیت</a>
+            <a asp-page="Index" class="@ThemeColors.Buttons.Secondary">بازگشت</a>
+        </div>
+    </div>
     <hr />
 
-    <div class="row">
-        <!-- ستون راست: مشخصات کالا -->
-        <div class="col-md-5">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h4>@Model.Asset.AssetCode - @Model.Asset.Name</h4>
-                    <hr />
+    <!-- مشخصات -->
+    <div class="card mb-4">
+        <div class="card-header fw-bold">📦 مشخصات اموال</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>کد اموال:</strong> @Model.Asset.AssetCode</p>
+                    <p><strong>کد قبلی:</strong> @(Model.Asset.OldAssetCode ?? "—")</p>
+                    <p><strong>نام:</strong> @Model.Asset.Name</p>
+                    <p><strong>سریال:</strong> @(Model.Asset.SerialNumber ?? "—")</p>
+                </div>
+                <div class="col-md-6">
                     <p><strong>دسته‌بندی:</strong> @Model.Asset.Category?.Name</p>
                     <p><strong>برند:</strong> @Model.Asset.Brand?.Name</p>
-                    <p><strong>مالک:</strong> @Model.Asset.Owner</p>
-                    <p><strong>سریال:</strong> @Model.Asset.SerialNumber</p>
-                    <p><strong>وضعیت:</strong> @Model.Asset.Status</p>
+                    <p><strong>مالک:</strong> @EnumHelper.GetDisplayName(Model.Asset.Owner)</p>
+                    <p><strong>وضعیت:</strong>
+                        <span class="badge bg-@(
+                            Model.Asset.Status == AssetStatus.InStock ? "info"
+                            : Model.Asset.Status == AssetStatus.Assigned ? "success"
+                            : Model.Asset.Status == AssetStatus.UnderRepair ? "warning"
+                            : Model.Asset.Status == AssetStatus.Scrapped ? "danger"
+                            : "dark")">
+                            @EnumHelper.GetDisplayName(Model.Asset.Status)
+                        </span>
+                    </p>
                 </div>
             </div>
-        </div>
-
-        <!-- ستون چپ: تاریخچه تغییرات (جدول مرتب) -->
-        <div class="col-md-7">
-            <h5>تاریخچه تغییرات</h5>
-            <div class="border bg-light p-3" style="max-height: 620px; overflow-y: auto;">
-                @if (!Model.History.Any())
-                {
-                    <p class="text-muted text-center py-5">هنوز هیچ تغییری ثبت نشده است.</p>
-                }
-                else
-                {
-                    <table class="table table-sm table-striped table-bordered">
-                        <thead class="table-dark">
-                            <tr>
-                                <th style="width: 50px;">ردیف</th>
-                                <th style="width: 110px;">تاریخ</th>
-                                <th style="width: 80px;">ساعت</th>
-                                <th>کاربر</th>
-                                <th>نوع تغییر</th>
-                                <th>مقدار قبلی</th>
-                                <th>مقدار جدید</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @{
-                                int rowNumber = 1;
-                            }
-                            @foreach (var log in Model.History.OrderByDescending(h => h.ChangeDate))
-                            {
-                                <tr>
-                                    <td>@rowNumber</td>
-                                    <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
-                                    <td>@log.ChangeDate.ToString("HH:mm")</td>
-                                    <td>
-                                        @(log.ChangedByEmployee != null ? 
-                                        $"{log.ChangedByEmployee.FirstName} {log.ChangedByEmployee.LastName}" 
-                                        : "سیستم")
-                                    </td>
-                                    <td>@AssetKeeper.Shared.EnumHelper.GetDisplayName(log.ChangeType)</td>
-                                    <td>@log.OldValue</td>
-                                    <td>@log.NewValue</td>
-                                </tr>
-                                rowNumber++;
-                            }
-                        </tbody>
-                    </table>
-                }
-            </div>
+            @if (!string.IsNullOrEmpty(Model.Asset.ImagePath))
+            {
+                <img src="@Model.Asset.ImagePath" alt="تصویر" style="max-height:150px" class="img-thumbnail mt-2" />
+            }
         </div>
     </div>
 
-    <a asp-page="Index" class="btn btn-secondary mt-3">بازگشت به لیست اموال</a>
+    <!-- جدول ۱: تغییرات مشخصات -->
+    <div class="card mb-4">
+        <div class="card-header fw-bold">📝 تاریخچه ویرایش مشخصات</div>
+        <div class="card-body p-0">
+            @if (!assetChanges.Any())
+            {
+                <p class="text-muted text-center py-3">هیچ تغییری ثبت نشده است.</p>
+            }
+            else
+            {
+                <div style="max-height:300px;overflow-y:auto;">
+                    <table class="table table-sm table-striped table-bordered mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width:40px">#</th>
+                                <th style="width:100px">تاریخ</th>
+                                <th style="width:60px">ساعت</th>
+                                <th>نوع تغییر</th>
+                                <th>مقدار قبلی</th>
+                                <th>مقدار جدید</th>
+                                <th style="width:110px">کاربر</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int r1 = 1; }
+                            @foreach (var log in assetChanges)
+                            {
+                                <tr>
+                                    <td>@r1</td>
+                                    <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
+                                    <td>@log.ChangeDate.ToString("HH:mm")</td>
+                                    <td>@EnumHelper.GetDisplayName(log.ChangeType)</td>
+                                    <td>@log.OldValue</td>
+                                    <td>@log.NewValue</td>
+                                    <td>@(log.ChangedByEmployee != null ? $"{log.ChangedByEmployee.FirstName} {log.ChangedByEmployee.LastName}" : "سیستم")</td>
+                                </tr>
+                                r1++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- جدول ۲: تغییرات وضعیت -->
+    <div class="card mb-4">
+        <div class="card-header fw-bold">🔄 تاریخچه وضعیت و تحویل</div>
+        <div class="card-body p-0">
+            @if (!statusChanges.Any())
+            {
+                <p class="text-muted text-center py-3">هیچ تغییری ثبت نشده است.</p>
+            }
+            else
+            {
+                <div style="max-height:300px;overflow-y:auto;">
+                    <table class="table table-sm table-striped table-bordered mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width:40px">#</th>
+                                <th style="width:100px">تاریخ</th>
+                                <th style="width:60px">ساعت</th>
+                                <th>نوع تغییر</th>
+                                <th>از</th>
+                                <th>به</th>
+                                <th style="width:110px">کاربر</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int r2 = 1; }
+                            @{
+                                string FormatStatusValue(string val)
+                                {
+                                    if (Enum.TryParse<AssetStatus>(val, out var s))
+                                        return EnumHelper.GetDisplayName(s);
+                                    return val;
+                                }
+                            }
+                            @foreach (var log in statusChanges)
+                            {
+                                <tr>
+                                    <td>@r2</td>
+                                    <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
+                                    <td>@log.ChangeDate.ToString("HH:mm")</td>
+                                    <td>@EnumHelper.GetDisplayName(log.ChangeType)</td>
+                                    <td>@FormatStatusValue(log.OldValue)</td>
+                                    <td>@FormatStatusValue(log.NewValue)</td>
+                                    <td>@(log.ChangedByEmployee != null ? $"{log.ChangedByEmployee.FirstName} {log.ChangedByEmployee.LastName}" : "سیستم")</td>
+                                </tr>
+                                r2++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
 </div>
