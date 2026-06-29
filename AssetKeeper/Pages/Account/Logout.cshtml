@@ -1,0 +1,19 @@
+@page
+@model AssetKeeper.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "خروج";
+}
+
+<div class="container mt-5 text-center">
+    <h3>در حال خروج...</h3>
+</div>
+
+<form method="post" class="d-none">
+    <button type="submit">Logout</button>
+</form>
+
+<script>
+    window.onload = function() {
+        document.forms[0].submit();
+    };
+</script>

@@ -1,0 +1,110 @@
+﻿@page
+@model AssetKeeper.Pages.Assignments.ReturnModel
+@{
+    ViewData["Title"] = "عودت اموال";
+}
+
+<div class="container mt-4">
+    <h2>عودت اموال</h2>
+    <hr />
+
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>⚠️ @error.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>@Model.CurrentAssignment.Asset?.AssetCode - @Model.CurrentAssignment.Asset?.Name</h5>
+            <p><strong>تحویل داده شده به:</strong> @Model.CurrentAssignment.Employee?.FirstName @Model.CurrentAssignment.Employee?.LastName</p>
+            <p><strong>تاریخ تحویل:</strong> @Model.CurrentAssignment.AssignmentDate.ToShortDateString()</p>
+        </div>
+    </div>
+
+    <form method="post">
+        <input type="hidden" asp-for="CurrentAssignment.Id" />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">تاریخ عودت <span class="text-danger">*</span></label>
+                <input asp-for="CurrentAssignment.ReturnDate" type="date" class="form-control" required />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">توضیحات عودت</label>
+            <textarea asp-for="CurrentAssignment.Notes" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-check mb-4">
+            <input type="checkbox" asp-for="ReassignToAnother" class="form-check-input" id="reassignCheck" />
+            <label asp-for="ReassignToAnother" class="form-check-label">تحویل فوری به شخص دیگر</label>
+        </div>
+
+        <!-- بخش جستجوی ساده -->
+        <div id="reassignSection" style="display: none;">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">جستجوی پرسنل جدید <span class="text-danger">*</span></label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="کد پرسنلی یا نام را تایپ کنید..." />
+                    <select id="NewEmployeeSelect" class="form-select mt-2" style="display:none;"></select>
+                    <input type="hidden" asp-for="NewEmployeeId" id="NewEmployeeId" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">تاریخ تحویل جدید</label>
+                    <input asp-for="NewAssignmentDate" type="date" class="form-control" />
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="@ThemeColors.Buttons.Warning">ثبت عودت</button>
+            <a asp-page="Index" class="@ThemeColors.Buttons.Secondary">انصراف</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('reassignCheck').addEventListener('change', function () {
+        document.getElementById('reassignSection').style.display = this.checked ? 'block' : 'none';
+    });
+
+    // جستجوی ساده با جاوااسکریپت
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            document.getElementById('NewEmployeeSelect').style.display = 'none';
+            return;
+        }
+
+        searchTimeout = setTimeout(async () => {
+            const response = await fetch(`/Assignments/Return?handler=SearchEmployees&term=${encodeURIComponent(term)}`);
+            const data = await response.json();
+
+            const select = document.getElementById('NewEmployeeSelect');
+            select.innerHTML = '<option value="">انتخاب کنید...</option>';
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.text;
+                select.appendChild(option);
+            });
+
+            select.style.display = 'block';
+        }, 300);
+    });
+
+    // وقتی گزینه انتخاب شد
+    document.getElementById('NewEmployeeSelect').addEventListener('change', function () {
+        document.getElementById('NewEmployeeId').value = this.value;
+    });
+</script>

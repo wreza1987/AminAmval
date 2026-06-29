@@ -1,0 +1,41 @@
+﻿@page
+@model AssetKeeper.Pages.Categories.CreateModel
+@{
+    ViewData["Title"] = "دسته‌بندی جدید";
+}
+
+<div class="container mt-4">
+    <h2>دسته‌بندی جدید</h2>
+    <hr />
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <strong>لطفاً خطاها را اصلاح کنید:</strong>
+            @Html.ValidationSummary(true)
+        </div>
+    }
+
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label">نام دسته‌بندی <span class="text-danger">*</span></label>
+            <input asp-for="Category.Name" class="form-control" required />
+            <span asp-validation-for="Category.Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">توضیحات</label>
+            <textarea asp-for="Category.Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="@ThemeColors.Buttons.Success">ثبت</button>
+            <a asp-page="Index" class="@ThemeColors.Buttons.Secondary">انصراف</a>
+        </div>
+    </form>
+</div>

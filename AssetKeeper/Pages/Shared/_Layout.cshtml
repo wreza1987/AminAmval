@@ -1,0 +1,115 @@
+﻿@using AssetKeeper.Domain.Enums
+
+@{
+    var accessLevel = User.FindFirst("AccessLevel")?.Value;
+    bool isAdmin = accessLevel == "Admin";
+    bool isWarehouse = accessLevel == "WarehouseKeeper";
+    bool isAdminOrWarehouse = isAdmin || isWarehouse;
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - امین اموال</title>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+        <base href="~/" />
+    </head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/">امین اموال</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <ul class="navbar-nav me-auto">
+                        @if (isAdminOrWarehouse)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Index">داشبورد</a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    اموال/تجهیزات
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-page="/Assets/Index">اموال</a></li>
+                                    <li><a class="dropdown-item" asp-page="/Categories/Index">دسته‌بندی‌ها</a></li>
+                                    <li><a class="dropdown-item" asp-page="/Brands/Index">برندها</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Employees/Index">پرسنل</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Assignments/Index">تخصیص‌ها</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Requests/Index">📋 درخواست‌ها</a>
+                            </li>
+                            @if (isAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/Admin/AccessLevels">🔑 سطح دسترسی</a>
+                                </li>
+                            }
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    📊 لاگ‌ها
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-page="/Logs/AssetLogs">لاگ اموال</a></li>
+                                    @if (isAdmin)
+                                    {
+                                        <li><a class="dropdown-item" asp-page="/Logs/EmployeeLogs">لاگ پرسنل</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" href="#" role="button"
+                            data-bs-toggle="dropdown">
+                                👤 حساب من
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" asp-page="/Account/Profile">پروفایل من</a></li>
+                                <li><a class="dropdown-item" asp-page="/Account/MyAssets">اموال من</a></li>
+                                <li><a class="dropdown-item" asp-page="/Account/MyAssetHistory">گردش اموال من</a></li>
+                                <li><a class="dropdown-item" asp-page="/Account/MyRequests">درخواست من</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" asp-page="/Account/Logout">
+                                <button type="submit" class="nav-link btn btn-link text-light">🚪 خروج</button>
+                            </form>
+                        </li>
+                    </ul>
+                }
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="container mt-4">
+        @RenderBody()
+    </main>
+    <footer class="border-top footer text-muted py-3 mt-5">
+        <div class="container">
+            <span>&copy; ۱۴۰۵ - سیستم مدیریت اموال (امین اموال)</span>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)  @* ✅ این خط رو اضافه کن *@
+</body>
+</html>

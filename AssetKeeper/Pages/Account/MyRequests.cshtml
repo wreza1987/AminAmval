@@ -1,0 +1,51 @@
+@page
+@model AssetKeeper.Pages.Account.MyRequestsModel
+@{
+    ViewData["Title"] = "درخواست من";
+}
+
+<h3 class="mb-4">💬 درخواست‌های من</h3>
+
+<div class="card" style="max-width: 700px;">
+    <div id="chatBox" class="card-body" style="height: 400px; overflow-y: auto;">
+        <div id="messages">
+            @foreach (var req in Model.Requests)
+            {
+                if (req.Employee.AccessLevel == AssetKeeper.Domain.Enums.EmployeeAccessLevel.Normal)
+                {
+                    <div class="d-flex justify-content-end mb-2">
+                        <div class="bg-primary text-white rounded p-2 px-3" style="max-width: 75%;">
+                            <div>@req.Message</div>
+                            <div class="small opacity-75 mt-1">@req.CreatedAt.ToString("yyyy/MM/dd HH:mm")</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex justify-content-start mb-2">
+                        <div class="bg-light border rounded p-2 px-3" style="max-width: 75%;">
+                            <div class="small text-muted mb-1">@req.Employee.FirstName @req.Employee.LastName</div>
+                            <div>@req.Message</div>
+                            <div class="small text-muted mt-1">@req.CreatedAt.ToString("yyyy/MM/dd HH:mm")</div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <div class="card-footer">
+        <form method="post">
+            <div class="input-group">
+                <input asp-for="Message" class="form-control" placeholder="درخواست خود را بنویسید..." />
+                <button type="submit" class="btn btn-primary">ارسال</button>
+            </div>
+            <span asp-validation-for="Message" class="text-danger small"></span>
+        </form>
+    </div>
+</div>
+
+@* اسکرول به پایین بعد از لود *@
+<script>
+    var chatBox = document.getElementById('chatBox');
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>

@@ -1,0 +1,447 @@
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (20ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [MigrationId], [ProductVersion]
+      FROM [__EFMigrationsHistory]
+      ORDER BY [MigrationId];
+info: Microsoft.EntityFrameworkCore.Migrations[20405]
+      No migrations were applied. The database is already up to date.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Categories] AS [c]) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (15ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Categories] AS [c]
+              WHERE [c].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Categories] AS [c]
+              WHERE [c].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Categories] AS [c]
+              WHERE [c].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Categories] AS [c]
+              WHERE [c].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Categories] AS [c]
+              WHERE [c].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Brands] AS [b]
+              WHERE [b].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Brands] AS [b]
+              WHERE [b].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Brands] AS [b]
+              WHERE [b].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Brands] AS [b]
+              WHERE [b].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Brands] AS [b]
+              WHERE [b].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__name_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Brands] AS [b]
+              WHERE [b].[Name] = @__name_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__personnelCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Employees] AS [e]
+              WHERE [e].[PersonnelCode] = @__personnelCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__personnelCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Employees] AS [e]
+              WHERE [e].[PersonnelCode] = @__personnelCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__personnelCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Employees] AS [e]
+              WHERE [e].[PersonnelCode] = @__personnelCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__assetCode_0='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Assets] AS [a]
+              WHERE [a].[AssetCode] = @__assetCode_0) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__categoryName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [c].[Id], [c].[CreatedAt], [c].[Description], [c].[Name]
+      FROM [Categories] AS [c]
+      WHERE [c].[Name] = @__categoryName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__brandName_0='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [b].[Id], [b].[CreatedAt], [b].[Description], [b].[Name]
+      FROM [Brands] AS [b]
+      WHERE [b].[Name] = @__brandName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (202ms) [Parameters=[@p0='?' (Size = 450), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime2), @p4='?' (Size = 4000), @p5='?' (Size = 4000), @p6='?' (Size = 4000), @p7='?' (Size = 4000), @p8='?' (DbType = Int32), @p9='?' (Size = 4000), @p10='?' (DbType = Int32), @p11='?' (DbType = DateTime2), @p12='?' (Size = 4000), @p13='?' (Size = 450), @p14='?' (DbType = Int32), @p15='?' (DbType = Int32), @p16='?' (DbType = DateTime2), @p17='?' (Size = 4000), @p18='?' (Size = 4000), @p19='?' (Size = 4000), @p20='?' (Size = 4000), @p21='?' (DbType = Int32), @p22='?' (Size = 4000), @p23='?' (DbType = Int32), @p24='?' (DbType = DateTime2), @p25='?' (Size = 4000), @p26='?' (Size = 450), @p27='?' (DbType = Int32), @p28='?' (DbType = Int32), @p29='?' (DbType = DateTime2), @p30='?' (Size = 4000), @p31='?' (Size = 4000), @p32='?' (Size = 4000), @p33='?' (Size = 4000), @p34='?' (DbType = Int32), @p35='?' (Size = 4000), @p36='?' (DbType = Int32), @p37='?' (DbType = DateTime2), @p38='?' (Size = 4000), @p39='?' (Size = 450), @p40='?' (DbType = Int32), @p41='?' (DbType = Int32), @p42='?' (DbType = DateTime2), @p43='?' (Size = 4000), @p44='?' (Size = 4000), @p45='?' (Size = 4000), @p46='?' (Size = 4000), @p47='?' (DbType = Int32), @p48='?' (Size = 4000), @p49='?' (DbType = Int32), @p50='?' (DbType = DateTime2), @p51='?' (Size = 4000), @p52='?' (Size = 450), @p53='?' (DbType = Int32), @p54='?' (DbType = Int32), @p55='?' (DbType = DateTime2), @p56='?' (Size = 4000), @p57='?' (Size = 4000), @p58='?' (Size = 4000), @p59='?' (Size = 4000), @p60='?' (DbType = Int32), @p61='?' (Size = 4000), @p62='?' (DbType = Int32), @p63='?' (DbType = DateTime2), @p64='?' (Size = 4000), @p65='?' (Size = 450), @p66='?' (DbType = Int32), @p67='?' (DbType = Int32), @p68='?' (DbType = DateTime2), @p69='?' (Size = 4000), @p70='?' (Size = 4000), @p71='?' (Size = 4000), @p72='?' (Size = 4000), @p73='?' (DbType = Int32), @p74='?' (Size = 4000), @p75='?' (DbType = Int32), @p76='?' (DbType = DateTime2), @p77='?' (Size = 4000), @p78='?' (Size = 450), @p79='?' (DbType = Int32), @p80='?' (DbType = Int32), @p81='?' (DbType = DateTime2), @p82='?' (Size = 4000), @p83='?' (Size = 4000), @p84='?' (Size = 4000), @p85='?' (Size = 4000), @p86='?' (DbType = Int32), @p87='?' (Size = 4000), @p88='?' (DbType = Int32), @p89='?' (DbType = DateTime2), @p90='?' (Size = 4000), @p91='?' (Size = 450), @p92='?' (DbType = Int32), @p93='?' (DbType = Int32), @p94='?' (DbType = DateTime2), @p95='?' (Size = 4000), @p96='?' (Size = 4000), @p97='?' (Size = 4000), @p98='?' (Size = 4000), @p99='?' (DbType = Int32), @p100='?' (Size = 4000), @p101='?' (DbType = Int32), @p102='?' (DbType = DateTime2), @p103='?' (Size = 4000), @p104='?' (Size = 450), @p105='?' (DbType = Int32), @p106='?' (DbType = Int32), @p107='?' (DbType = DateTime2), @p108='?' (Size = 4000), @p109='?' (Size = 4000), @p110='?' (Size = 4000), @p111='?' (Size = 4000), @p112='?' (DbType = Int32), @p113='?' (Size = 4000), @p114='?' (DbType = Int32), @p115='?' (DbType = DateTime2), @p116='?' (Size = 4000), @p117='?' (Size = 450), @p118='?' (DbType = Int32), @p119='?' (DbType = Int32), @p120='?' (DbType = DateTime2), @p121='?' (Size = 4000), @p122='?' (Size = 4000), @p123='?' (Size = 4000), @p124='?' (Size = 4000), @p125='?' (DbType = Int32), @p126='?' (Size = 4000), @p127='?' (DbType = Int32), @p128='?' (DbType = DateTime2), @p129='?' (Size = 4000), @p130='?' (DbType = DateTime2), @p131='?' (Size = 4000), @p132='?' (Size = 4000), @p133='?' (DbType = DateTime2), @p134='?' (Size = 4000), @p135='?' (Size = 4000), @p136='?' (DbType = DateTime2), @p137='?' (Size = 4000), @p138='?' (Size = 4000), @p139='?' (DbType = DateTime2), @p140='?' (Size = 4000), @p141='?' (Size = 4000), @p142='?' (DbType = DateTime2), @p143='?' (Size = 4000), @p144='?' (Size = 4000), @p145='?' (DbType = DateTime2), @p146='?' (Size = 4000), @p147='?' (Size = 4000), @p148='?' (DbType = DateTime2), @p149='?' (Size = 4000), @p150='?' (Size = 4000), @p151='?' (DbType = DateTime2), @p152='?' (Size = 4000), @p153='?' (Size = 4000), @p154='?' (DbType = DateTime2), @p155='?' (Size = 4000), @p156='?' (Size = 4000), @p157='?' (DbType = DateTime2), @p158='?' (Size = 4000), @p159='?' (Size = 4000), @p160='?' (DbType = DateTime2), @p161='?' (Size = 4000), @p162='?' (Size = 4000), @p163='?' (DbType = Int32), @p164='?' (DbType = DateTime2), @p165='?' (Size = 4000), @p166='?' (Size = 4000), @p167='?' (Size = 4000), @p168='?' (DbType = Boolean), @p169='?' (Size = 4000), @p170='?' (Size = 450), @p171='?' (Size = 450), @p172='?' (DbType = DateTime2), @p173='?' (Size = 4000), @p174='?' (DbType = Int32), @p175='?' (DbType = DateTime2), @p176='?' (Size = 4000), @p177='?' (Size = 4000), @p178='?' (Size = 4000), @p179='?' (DbType = Boolean), @p180='?' (Size = 4000), @p181='?' (Size = 450), @p182='?' (Size = 450), @p183='?' (DbType = DateTime2), @p184='?' (Size = 4000), @p185='?' (DbType = Int32), @p186='?' (DbType = DateTime2), @p187='?' (Size = 4000), @p188='?' (Size = 4000), @p189='?' (Size = 4000), @p190='?' (DbType = Boolean), @p191='?' (Size = 4000), @p192='?' (Size = 450), @p193='?' (Size = 450), @p194='?' (DbType = DateTime2), @p195='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      MERGE [Assets] USING (
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, 0),
+      (@p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, 1),
+      (@p26, @p27, @p28, @p29, @p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, 2),
+      (@p39, @p40, @p41, @p42, @p43, @p44, @p45, @p46, @p47, @p48, @p49, @p50, @p51, 3),
+      (@p52, @p53, @p54, @p55, @p56, @p57, @p58, @p59, @p60, @p61, @p62, @p63, @p64, 4),
+      (@p65, @p66, @p67, @p68, @p69, @p70, @p71, @p72, @p73, @p74, @p75, @p76, @p77, 5),
+      (@p78, @p79, @p80, @p81, @p82, @p83, @p84, @p85, @p86, @p87, @p88, @p89, @p90, 6),
+      (@p91, @p92, @p93, @p94, @p95, @p96, @p97, @p98, @p99, @p100, @p101, @p102, @p103, 7),
+      (@p104, @p105, @p106, @p107, @p108, @p109, @p110, @p111, @p112, @p113, @p114, @p115, @p116, 8),
+      (@p117, @p118, @p119, @p120, @p121, @p122, @p123, @p124, @p125, @p126, @p127, @p128, @p129, 9)) AS i ([AssetCode], [BrandId], [CategoryId], [CreatedAt], [Description], [ImagePath], [Name], [OldAssetCode], [Owner], [SerialNumber], [Status], [StatusChangeDate], [StatusNotes], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([AssetCode], [BrandId], [CategoryId], [CreatedAt], [Description], [ImagePath], [Name], [OldAssetCode], [Owner], [SerialNumber], [Status], [StatusChangeDate], [StatusNotes])
+      VALUES (i.[AssetCode], i.[BrandId], i.[CategoryId], i.[CreatedAt], i.[Description], i.[ImagePath], i.[Name], i.[OldAssetCode], i.[Owner], i.[SerialNumber], i.[Status], i.[StatusChangeDate], i.[StatusNotes])
+      OUTPUT INSERTED.[Id], i._Position;
+      MERGE [Brands] USING (
+      VALUES (@p130, @p131, @p132, 0),
+      (@p133, @p134, @p135, 1),
+      (@p136, @p137, @p138, 2),
+      (@p139, @p140, @p141, 3),
+      (@p142, @p143, @p144, 4),
+      (@p145, @p146, @p147, 5)) AS i ([CreatedAt], [Description], [Name], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([CreatedAt], [Description], [Name])
+      VALUES (i.[CreatedAt], i.[Description], i.[Name])
+      OUTPUT INSERTED.[Id], i._Position;
+      MERGE [Categories] USING (
+      VALUES (@p148, @p149, @p150, 0),
+      (@p151, @p152, @p153, 1),
+      (@p154, @p155, @p156, 2),
+      (@p157, @p158, @p159, 3),
+      (@p160, @p161, @p162, 4)) AS i ([CreatedAt], [Description], [Name], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([CreatedAt], [Description], [Name])
+      VALUES (i.[CreatedAt], i.[Description], i.[Name])
+      OUTPUT INSERTED.[Id], i._Position;
+      MERGE [Employees] USING (
+      VALUES (@p163, @p164, @p165, @p166, @p167, @p168, @p169, @p170, @p171, @p172, @p173, 0),
+      (@p174, @p175, @p176, @p177, @p178, @p179, @p180, @p181, @p182, @p183, @p184, 1),
+      (@p185, @p186, @p187, @p188, @p189, @p190, @p191, @p192, @p193, @p194, @p195, 2)) AS i ([AccessLevel], [CreatedAt], [Department], [Description], [FirstName], [IsActive], [LastName], [NationalCode], [PersonnelCode], [StartDate], [VicePresidency], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([AccessLevel], [CreatedAt], [Department], [Description], [FirstName], [IsActive], [LastName], [NationalCode], [PersonnelCode], [StartDate], [VicePresidency])
+      VALUES (i.[AccessLevel], i.[CreatedAt], i.[Department], i.[Description], i.[FirstName], i.[IsActive], i.[LastName], i.[NationalCode], i.[PersonnelCode], i.[StartDate], i.[VicePresidency])
+      OUTPUT INSERTED.[Id], i._Position;
+fail: Microsoft.EntityFrameworkCore.Update[10000]
+      An exception occurred in the database while saving changes for context type 'AssetKeeper.Context.MyDbContext'.
+      Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+       ---> Microsoft.Data.SqlClient.SqlException (0x80131904): The MERGE statement conflicted with the FOREIGN KEY constraint "FK_Assets_Category". The conflict occurred in database "AssetKeeperDB", table "dbo.Categories", column 'Id'.
+         at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+         at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+         at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+         at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+         at Microsoft.Data.SqlClient.SqlDataReader.TryHasMoreRows(Boolean& moreRows)
+         at Microsoft.Data.SqlClient.SqlDataReader.TryReadInternal(Boolean setTimeout, Boolean& more)
+         at Microsoft.Data.SqlClient.SqlDataReader.ReadAsyncExecute(Task task, Object state)
+         at Microsoft.Data.SqlClient.SqlDataReader.InvokeAsyncCall[T](SqlDataReaderBaseAsyncCallContext`1 context)
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+      ClientConnectionId:0a2a5a97-0777-4122-9001-3a3c465b2b07
+      Error Number:547,State:0,Class:16
+         --- End of inner exception stack trace ---
+         at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+      Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+       ---> Microsoft.Data.SqlClient.SqlException (0x80131904): The MERGE statement conflicted with the FOREIGN KEY constraint "FK_Assets_Category". The conflict occurred in database "AssetKeeperDB", table "dbo.Categories", column 'Id'.
+         at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+         at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+         at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+         at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+         at Microsoft.Data.SqlClient.SqlDataReader.TryHasMoreRows(Boolean& moreRows)
+         at Microsoft.Data.SqlClient.SqlDataReader.TryReadInternal(Boolean setTimeout, Boolean& more)
+         at Microsoft.Data.SqlClient.SqlDataReader.ReadAsyncExecute(Task task, Object state)
+         at Microsoft.Data.SqlClient.SqlDataReader.InvokeAsyncCall[T](SqlDataReaderBaseAsyncCallContext`1 context)
+      --- End of stack trace from previous location ---
+         at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+      ClientConnectionId:0a2a5a97-0777-4122-9001-3a3c465b2b07
+      Error Number:547,State:0,Class:16
+         --- End of inner exception stack trace ---
+         at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeResultSetAsync(Int32 startCommandIndex, RelationalDataReader reader, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.AffectedCountModificationCommandBatch.ConsumeAsync(RelationalDataReader reader, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.SqlServer.Update.Internal.SqlServerModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal.SqlServerExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+         at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)

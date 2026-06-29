@@ -1,0 +1,176 @@
+﻿@page
+@using AssetKeeper.Shared
+@model AssetKeeper.Pages.Assets.CreateModel
+@{
+    ViewData["Title"] = "ثبت اموال جدید";
+}
+
+<div class="container mt-4">
+    <h2>ثبت اموال جدید</h2>
+    <hr />
+
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>⚠️ @error.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">کد اموال <span class="text-danger">*</span></label>
+                <input asp-for="Asset.AssetCode" class="form-control" required />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">نام اموال <span class="text-danger">*</span></label>
+                <input asp-for="Asset.Name" class="form-control" required />
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label class="form-label">دسته‌بندی <span class="text-danger">*</span></label>
+            <input type="text" id="searchCategory" class="form-control"
+                placeholder="نام دسته‌بندی را تایپ کنید..."
+                value="@Model.SelectedCategoryName" />  @* ✅ مقدار قبلی *@
+            <select id="CategorySelect" class="form-select mt-2" style="display:none;"></select>
+            <input type="hidden" asp-for="Asset.CategoryId" id="CategoryId" />
+            <input type="hidden" asp-for="SelectedCategoryName" />
+            <span asp-validation-for="Asset.CategoryId" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">برند <span class="text-danger">*</span></label>
+            <input type="text" id="searchBrand" class="form-control"
+                placeholder="نام برند را تایپ کنید..."
+                value="@Model.SelectedBrandName" />  @* ✅ مقدار قبلی *@
+            <select id="BrandSelect" class="form-select mt-2" style="display:none;"></select>
+            <input type="hidden" asp-for="Asset.BrandId" id="BrandId" />
+            <input type="hidden" asp-for="SelectedBrandName" />
+            <span asp-validation-for="Asset.BrandId" class="text-danger small"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">شماره سریال</label>
+                <input asp-for="Asset.SerialNumber" class="form-control" />
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">مالک</label>
+                <select asp-for="Asset.Owner" class="form-select">
+                    <option value="Navaco">ناواکو</option>
+                    <option value="MaskanBank">مسکن بانک</option>
+                    <option value="Other">سایر</option>
+                    <option value="Unknown">نامشخص</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">تصویر کالا</label>
+            <input type="file" asp-for="Asset.ImageFile" class="form-control" accept="image/*" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">توضیحات</label>
+            <textarea asp-for="Asset.Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="@ThemeColors.Buttons.Success">ثبت</button>
+            <a asp-page="Index" class="@ThemeColors.Buttons.Secondary">انصراف</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // ====================== دسته‌بندی ======================
+    let categoryTimeout;
+    const searchCategory = document.getElementById('searchCategory');
+    const categorySelect = document.getElementById('CategorySelect');
+    const categoryId = document.getElementById('CategoryId');
+
+    searchCategory.addEventListener('input', function () {
+        clearTimeout(categoryTimeout);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            categorySelect.style.display = 'none';
+            return;
+        }
+
+        categoryTimeout = setTimeout(async () => {
+            const response = await fetch(`/Assets/Create?handler=SearchCategories&term=${encodeURIComponent(term)}`);
+            const data = await response.json();
+
+            categorySelect.innerHTML = '<option value="">انتخاب کنید...</option>';
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.text;
+                categorySelect.appendChild(option);
+            });
+
+            categorySelect.style.display = 'block';
+        }, 250);
+    });
+
+    categorySelect.addEventListener('change', function () {
+        if (this.value) {
+            categoryId.value = this.value;
+            // مهم: نمایش نام انتخاب شده در input
+            searchCategory.value = this.options[this.selectedIndex].textContent;
+            categorySelect.style.display = 'none';
+            console.log('Category selected:', this.value);
+        }
+    });
+
+    // ====================== برند ======================
+    let brandTimeout;
+    const searchBrand = document.getElementById('searchBrand');
+    const brandSelect = document.getElementById('BrandSelect');
+    const brandId = document.getElementById('BrandId');
+
+    searchBrand.addEventListener('input', function () {
+        clearTimeout(brandTimeout);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            brandSelect.style.display = 'none';
+            return;
+        }
+
+        brandTimeout = setTimeout(async () => {
+            const response = await fetch(`/Assets/Create?handler=SearchBrands&term=${encodeURIComponent(term)}`);
+            const data = await response.json();
+
+            brandSelect.innerHTML = '<option value="">انتخاب کنید...</option>';
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.text;
+                brandSelect.appendChild(option);
+            });
+
+            brandSelect.style.display = 'block';
+        }, 250);
+    });
+
+    brandSelect.addEventListener('change', function () {
+        if (this.value) {
+            brandId.value = this.value;
+            searchBrand.value = this.options[this.selectedIndex].textContent;
+            brandSelect.style.display = 'none';
+            console.log('Brand selected:', this.value);
+        }
+    });
+</script>

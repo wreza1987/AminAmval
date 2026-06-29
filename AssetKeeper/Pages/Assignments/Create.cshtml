@@ -1,0 +1,129 @@
+﻿@page
+@using AssetKeeper.Shared
+@model AssetKeeper.Pages.Assignments.CreateModel
+@{
+    ViewData["Title"] = "تخصیص اموال";
+}
+
+<div class="container mt-4">
+    <h2>تخصیص اموال به پرسنل</h2>
+    <hr />
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>⚠️ @error.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    <form method="post">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">اموال <span class="text-danger">*</span></label>
+                <input type="text" id="searchAsset" class="form-control" placeholder="کد اموال یا نام کالا را تایپ کنید..." />
+                <select id="AssetSelect" class="form-select mt-2" style="display:none;"></select>
+                <input type="hidden" asp-for="AssignmentDto.AssetId" id="AssetId" />
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">پرسنل <span class="text-danger">*</span></label>
+                <input type="text" id="searchEmployee" class="form-control" placeholder="کد پرسنلی یا نام را تایپ کنید..." />
+                <select id="EmployeeSelect" class="form-select mt-2" style="display:none;"></select>
+                <input type="hidden" asp-for="AssignmentDto.EmployeeId" id="EmployeeId" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">تاریخ تخصیص</label>
+                <input asp-for="AssignmentDto.AssignmentDate" type="date" class="form-control" />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">توضیحات تحویل</label>
+            <textarea asp-for="AssignmentDto.Notes" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="@ThemeColors.Buttons.Success">ثبت</button>
+            <a asp-page="Index" class="@ThemeColors.Buttons.Secondary">انصراف</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // جستجوی اموال
+    let assetTimeout;
+    document.getElementById('searchAsset').addEventListener('input', function () {
+        clearTimeout(assetTimeout);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            document.getElementById('AssetSelect').style.display = 'none';
+            return;
+        }
+
+        assetTimeout = setTimeout(async () => {
+            const response = await fetch(`/Assignments/Create?handler=SearchAssets&term=${encodeURIComponent(term)}`);
+            const data = await response.json();
+
+            const select = document.getElementById('AssetSelect');
+            select.innerHTML = '<option value="">انتخاب کنید...</option>';
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.text;
+                select.appendChild(option);
+            });
+
+            select.style.display = 'block';
+        }, 250);
+    });
+
+    document.getElementById('AssetSelect').addEventListener('change', function () {
+        document.getElementById('AssetId').value = this.value;
+    });
+
+    // جستجوی پرسنل (قبلی)
+    let employeeTimeout;
+    document.getElementById('searchEmployee').addEventListener('input', function () {
+        clearTimeout(employeeTimeout);
+        const term = this.value.trim();
+
+        if (term.length < 2) {
+            document.getElementById('EmployeeSelect').style.display = 'none';
+            return;
+        }
+
+        employeeTimeout = setTimeout(async () => {
+            const response = await fetch(`/Assignments/Create?handler=SearchEmployees&term=${encodeURIComponent(term)}`);
+            const data = await response.json();
+
+            const select = document.getElementById('EmployeeSelect');
+            select.innerHTML = '<option value="">انتخاب کنید...</option>';
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.text;
+                select.appendChild(option);
+            });
+
+            select.style.display = 'block';
+        }, 250);
+    });
+
+    document.getElementById('EmployeeSelect').addEventListener('change', function () {
+        document.getElementById('EmployeeId').value = this.value;
+    });
+</script>

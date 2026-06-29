@@ -1,0 +1,60 @@
+@page
+@model AssetKeeper.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "پروفایل من";
+}
+
+<h3 class="mb-4">👤 پروفایل من</h3>
+
+@if (Model.Employee != null)
+{
+    <div class="card mb-4">
+        <div class="card-header">مشخصات پرسنلی</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>نام و نام خانوادگی:</strong> @Model.Employee.FirstName @Model.Employee.LastName</p>
+                    <p><strong>کد پرسنلی:</strong> @Model.Employee.PersonnelCode</p>
+                    <p><strong>کد ملی:</strong> @Model.Employee.NationalCode</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>دپارتمان:</strong> @Model.Employee.Department</p>
+                    <p><strong>معاونت:</strong> @Model.Employee.VicePresidency</p>
+                    <p><strong>تاریخ شروع:</strong> @Model.Employee.StartDate.ToString("yyyy/MM/dd")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card" style="max-width: 500px;">
+    <div class="card-header">🔒 تغییر رمز عبور</div>
+    <div class="card-body">
+        @if (Model.SuccessMessage != null)
+        {
+            <div class="alert alert-success">@Model.SuccessMessage</div>
+        }
+        @if (Model.ErrorMessage != null)
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">رمز عبور فعلی</label>
+                <input asp-for="Input.CurrentPassword" type="password" class="form-control" />
+                <span asp-validation-for="Input.CurrentPassword" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">رمز عبور جدید</label>
+                <input asp-for="Input.NewPassword" type="password" class="form-control" />
+                <span asp-validation-for="Input.NewPassword" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">تکرار رمز جدید</label>
+                <input asp-for="Input.ConfirmPassword" type="password" class="form-control" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+            </div>
+            <button type="submit" class="@ThemeColors.Buttons.Primary">تغییر رمز</button>
+        </form>
+    </div>
+</div>

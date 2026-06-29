@@ -1,0 +1,67 @@
+﻿@page
+@model AssetKeeper.Pages.Assets.EditModel
+@using AssetKeeper.Shared
+@{
+    ViewData["Title"] = "ویرایش اموال";
+}
+<div class="container mt-4">
+    <h2>ویرایش اموال</h2>
+    <hr />
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>⚠️ @error.ErrorMessage</div>
+            }
+        </div>
+    }
+    <div class="col-md-6">
+        <form method="post">
+            <input type="hidden" asp-for="Asset.Id" />
+            <div class="mb-3">
+                <label class="form-label">کد اموال <span class="text-danger">*</span></label>
+                <input asp-for="Asset.AssetCode" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">نام اموال <span class="text-danger">*</span></label>
+                <input asp-for="Asset.Name" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">شماره سریال</label>
+                <input asp-for="Asset.SerialNumber" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">دسته‌بندی</label>
+                <select asp-for="Asset.CategoryId" asp-items="Model.Categories" class="form-select"></select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">برند</label>
+                <select asp-for="Asset.BrandId" asp-items="Model.Brands" class="form-select"></select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">مالک</label>
+                <select asp-for="Asset.Owner" class="form-select">
+                    <option value="Navaco">@EnumHelper.GetDisplayName(AssetOwner.Navaco)</option>
+                    <option value="MaskanBank">@EnumHelper.GetDisplayName(AssetOwner.MaskanBank)</option>
+                    <option value="Other">@EnumHelper.GetDisplayName(AssetOwner.Other)</option>
+                    <option value="Unknown">@EnumHelper.GetDisplayName(AssetOwner.Unknown)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">وضعیت فعلی</label>
+                <input type="text" class="form-control bg-light"
+                       value="@EnumHelper.GetDisplayName(Model.Asset.Status)" readonly />
+            </div>
+            <div class="mb-4">
+                <label class="form-label">یادداشت جدید</label>
+                <textarea asp-for="NewNote" class="form-control" rows="3"
+                          placeholder="یادداشت جدید به تاریخچه اضافه می‌شود..."></textarea>
+            </div>
+            <div class="d-flex gap-3">
+                <button type="submit" class="@ThemeColors.Buttons.Success">ثبت تغییرات</button>
+                <a asp-page="Index" class="@ThemeColors.Buttons.Secondary">انصراف</a>
+            </div>
+        </form>
+    </div>
+</div>
