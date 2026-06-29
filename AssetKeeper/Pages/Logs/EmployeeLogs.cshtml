@@ -1,0 +1,37 @@
+@page
+@model AssetKeeper.Pages.Logs.EmployeeLogsModel
+@{
+    ViewData["Title"] = "لاگ پرسنل";
+}
+<div class="container mt-4">
+    <h2>👤 لاگ تغییرات پرسنل</h2>
+    <hr />
+    <table class="table table-sm table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>تاریخ</th>
+                <th>کد پرسنلی</th>
+                <th>نام</th>
+                <th>تغییرات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int row = 1; }
+            @foreach (var emp in Model.Employees)
+            {
+                if (!string.IsNullOrEmpty(emp.Description))
+                {
+                    <tr>
+                        <td>@row</td>
+                        <td>@emp.CreatedAt.ToString("yyyy/MM/dd")</td>
+                        <td>@emp.PersonnelCode</td>
+                        <td>@emp.FirstName @emp.LastName</td>
+                        <td style="white-space:pre-wrap">@emp.Description</td>
+                    </tr>
+                    row++;
+                }
+            }
+        </tbody>
+    </table>
+</div>

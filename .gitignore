@@ -34,7 +34,7 @@ packages/
 *.nupkg
 
 # Logs
-logs/
+# logs/
 *.log
 
 # Database

@@ -1,0 +1,43 @@
+@page
+@model AssetKeeper.Pages.Logs.AssetLogsModel
+@using AssetKeeper.Shared
+@{
+    ViewData["Title"] = "لاگ اموال";
+}
+<div class="container mt-4">
+    <h2>📋 لاگ تغییرات اموال</h2>
+    <hr />
+    <table class="table table-sm table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>تاریخ</th>
+                <th>ساعت</th>
+                <th>کد اموال</th>
+                <th>نام اموال</th>
+                <th>نوع تغییر</th>
+                <th>مقدار قبلی</th>
+                <th>مقدار جدید</th>
+                <th>کاربر</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int row = 1; }
+            @foreach (var log in Model.Logs)
+            {
+                <tr>
+                    <td>@row</td>
+                    <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
+                    <td>@log.ChangeDate.ToString("HH:mm")</td>
+                    <td>@log.Asset?.AssetCode</td>
+                    <td>@log.Asset?.Name</td>
+                    <td>@EnumHelper.GetDisplayName(log.ChangeType)</td>
+                    <td>@log.OldValue</td>
+                    <td>@log.NewValue</td>
+                    <td>@(log.ChangedByEmployee != null ? $"{log.ChangedByEmployee.FirstName} {log.ChangedByEmployee.LastName}" : "سیستم")</td>
+                </tr>
+                row++;
+            }
+        </tbody>
+    </table>
+</div>
