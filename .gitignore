@@ -1,68 +1,43 @@
-# .NET
+# Build outputs
 bin/
 obj/
-bin/*
-obj/*
-*.user
-*.suo
-*.usersecrets
+*.dll
+*.exe
+*.pdb
 
-# Build results
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-bld/
-[Bb]in/
-[Oo]bj/
+# User-specific files
+*.user
+*.rsuser
 
 # Visual Studio
 .vs/
 .vscode/
-*.sln.cache
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
 
-# Rider / JetBrains
-.idea/
-*.sln.iml
+# .NET Core
+*.launchsettings.json
 
-# NuGet
-packages/
-*.nupkg
+# Entity Framework
+Migrations/**/*.cs
+!Migrations/**/Migrations/**/*.cs
 
-# Logs
+# Data & Seed
+wwwroot/Data/Seed/*.xlsx
+wwwroot/Data/Mappings.json
+
+# Logs & Temp
 # logs/
 *.log
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Images (optional)
+wwwroot/images/assets/*
+!wwwroot/images/assets/.gitkeep
 
-# User-specific files
-appsettings.*.json
-secrets.json
+# Secret files
+appsettings.Development.json
+appsettings.json
 
-# Runtime
-*.dll
-*.exe
-*.pdb
-*.cache
-
-# Entity Framework
-*.edmx
-*.edmx.*
-
-# Migration backups
-Migrations/*_Backup*
-Migrations
-Migrations/*
-
-# Mac / Linux
-.DS_Store
+# Other
+*.DS_Store
 Thumbs.db
 
 # Temporary files
@@ -71,7 +46,6 @@ Thumbs.db
 
 .git
 .idea
-.vs
 
 .doc
 .docx
