@@ -232,7 +232,7 @@
                                     @EnumHelper.GetDisplayName(item.Status)
                                 </span>
                             </td>
-                            <td><small>@item.CreatedAt.ToString("yyyy/MM/dd")</small></td>
+                            <td><small>@item.CreatedAt.ToPersian()</small></td>
                             <td>
                                 @if (!string.IsNullOrEmpty(item.ImagePath))
                                 {

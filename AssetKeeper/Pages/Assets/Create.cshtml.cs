@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace AssetKeeper.Pages.Assets;
 
@@ -14,11 +15,13 @@ public class CreateModel : PageModel
 {
     private readonly MyDbContext _context;
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public CreateModel(MyDbContext context, IWebHostEnvironment webHostEnvironment)
+    public CreateModel(MyDbContext context, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager)
     {
         _context = context;
         _webHostEnvironment = webHostEnvironment;
+        _userManager = userManager; 
     }
 
     [BindProperty]
@@ -56,6 +59,9 @@ public class CreateModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        var currentUser = await _userManager.GetUserAsync(User);
+        int? currentEmployeeId = currentUser?.EmployeeId;
+
         ModelState.Remove("Asset.Category");
         ModelState.Remove("Asset.Brand");
         ModelState.Remove("Asset.ImageFile");
@@ -108,7 +114,8 @@ public class CreateModel : PageModel
             ChangeType = ChangeType.Other,
             OldValue = "-",
             NewValue = "ثبت اولیه",
-            ChangeDate = DateTime.Now
+            ChangeDate = DateTime.Now,
+            ChangedByEmployeeId = currentEmployeeId 
         });
         await _context.SaveChangesAsync();
 

@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using AssetKeeper.Context;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
+using AssetKeeper.Shared;
 using Microsoft.AspNetCore.Authorization;
+
 
 namespace AssetKeeper.Pages.Employees;
 
@@ -13,13 +15,13 @@ public class EditModel : BasePageModel
 {
     public EditModel(MyDbContext context) : base(context) { }
 
-    [BindProperty]
-    public Employee Employee { get; set; } = new();
+    [BindProperty] public Employee Employee { get; set; } = new();
+    [BindProperty] public string? StartDatePersian { get; set; }
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
         // TempData.Remove("Success");
-
+        StartDatePersian = DateTime.Today.ToPersian();
         var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
         if (employee == null)
             return NotFound();
@@ -31,7 +33,7 @@ public class EditModel : BasePageModel
     public async Task<IActionResult> OnPostAsync()
     {
         // TempData.Remove("Success");
-
+        Employee.StartDate = PersianDateHelper.FromPersian(StartDatePersian) ?? DateTime.Today;
         if (!ModelState.IsValid)
             return Page();
 
@@ -39,16 +41,14 @@ public class EditModel : BasePageModel
         if (existing == null) return NotFound();
 
         // ثبت تاریخچه تغییرات
-        string changes = $"تغییرات در تاریخ {DateTime.Now:yyyy/MM/dd HH:mm}:\n";
+        // string changes = $"تغییرات در تاریخ {DateTime.Now:yyyy/MM/dd HH:mm}:\n";
+        string changes = $"تغییرات در تاریخ {DateTime.Now.ToPersian()}:\n";
 
         if (existing.Department != Employee.Department)
             changes += $"- واحد از '{existing.Department}' به '{Employee.Department}' تغییر کرد.\n";
 
         if (existing.VicePresidency != Employee.VicePresidency)
             changes += $"- معاونت از '{existing.VicePresidency}' به '{Employee.VicePresidency}' تغییر کرد.\n";
-
-        // if (existing.IsActive != Employee.IsActive)
-        //     changes += $"- وضعیت از {(existing.IsActive ? "فعال" : "غیرفعال")} به {(Employee.IsActive ? "فعال" : "غیرفعال")} تغییر کرد.\n";
 
         if (!string.IsNullOrEmpty(changes))
         {

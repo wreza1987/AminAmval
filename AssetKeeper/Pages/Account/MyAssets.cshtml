@@ -1,4 +1,5 @@
 @page
+@using AssetKeeper.Shared
 @model AssetKeeper.Pages.Account.MyAssetsModel
 @{
     ViewData["Title"] = "اموال من";
@@ -28,7 +29,7 @@ else
                 <tr>
                     <td>@item.Asset.AssetCode</td>
                     <td>@item.Asset.Name</td>
-                    <td>@item.AssignmentDate.ToString("yyyy/MM/dd")</td>
+                    <td>@item.AssignmentDate.ToPersian()</td>
                     <td>@item.DeliveredBy</td>
                     <td>@item.Notes</td>
                 </tr>

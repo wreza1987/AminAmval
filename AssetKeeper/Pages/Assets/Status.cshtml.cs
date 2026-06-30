@@ -1,6 +1,4 @@
-﻿// file: AssetKeeper\AssetKeeper\Pages\Assets\Status.cshtml.cs
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using AssetKeeper.Context;
 using AssetKeeper.Shared;
@@ -8,13 +6,19 @@ using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace AssetKeeper.Pages.Assets;
 
 [Authorize]
 public class StatusModel : BasePageModel
 {
-    public StatusModel(MyDbContext context) : base(context) { }
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public StatusModel(MyDbContext context, UserManager<ApplicationUser> userManager) : base(context) 
+    {
+        userManager = _userManager;
+    }
 
     [BindProperty] public Asset Asset { get; set; } = new();
     [BindProperty] public string? NewNote { get; set; }
@@ -34,6 +38,9 @@ public class StatusModel : BasePageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        var currentUser = await _userManager.GetUserAsync(User);
+        int? currentEmployeeId = currentUser?.EmployeeId;
+
         var existing = await _context.Assets
             .Include(a => a.Assignments)
             .FirstOrDefaultAsync(a => a.Id == Asset.Id);
@@ -61,7 +68,7 @@ public class StatusModel : BasePageModel
                     ChangeType = ChangeType.ReturnedFromEmployee,
                     OldValue = empLabel,
                     NewValue = "انبار",
-                    ChangedByEmployeeId = null,
+                    ChangedByEmployeeId = currentEmployeeId,
                     ChangeDate = DateTime.Now
                 });
             }
@@ -78,7 +85,7 @@ public class StatusModel : BasePageModel
                 ChangeType = ChangeType.StatusChanged,
                 OldValue = EnumHelper.GetDisplayName(oldStatus),
                 NewValue = EnumHelper.GetDisplayName(newStatus),
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }
@@ -110,7 +117,7 @@ public class StatusModel : BasePageModel
                 ChangeType = ChangeType.AssignedToEmployee,
                 OldValue = "انبار",
                 NewValue = newEmpLabel,
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }
@@ -123,7 +130,7 @@ public class StatusModel : BasePageModel
                 ChangeType = ChangeType.NoteAdded,
                 OldValue = "-",
                 NewValue = NewNote,
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }

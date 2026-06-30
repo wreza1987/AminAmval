@@ -6,6 +6,7 @@ using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace AssetKeeper.Pages.Assets;
@@ -14,15 +15,16 @@ namespace AssetKeeper.Pages.Assets;
 public class EditModel : BasePageModel
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
-    public EditModel(MyDbContext context, IWebHostEnvironment webHostEnvironment) : base(context)
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public EditModel(MyDbContext context, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager) : base(context)
     {
         _webHostEnvironment = webHostEnvironment;
+        _userManager = userManager;
     }
 
     [BindProperty] public Asset Asset { get; set; } = new();
-
     [BindProperty] public string? NewNote { get; set; }
-
     [BindProperty] public bool DeleteImage { get; set; } = false;
 
     public SelectList Categories { get; set; } = null!;
@@ -48,6 +50,9 @@ public class EditModel : BasePageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        var currentUser = await _userManager.GetUserAsync(User);
+        int? currentEmployeeId = currentUser?.EmployeeId;
+        
         ModelState.Remove("Asset.Category");
         ModelState.Remove("Asset.Brand");
 
@@ -90,7 +95,7 @@ public class EditModel : BasePageModel
                 ChangeType = ChangeType.AssetCodeChanged,
                 OldValue = existing.AssetCode,
                 NewValue = Asset.AssetCode,
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }
@@ -103,7 +108,7 @@ public class EditModel : BasePageModel
                 ChangeType = ChangeType.NameChanged,
                 OldValue = existing.Name,
                 NewValue = Asset.Name,
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }
@@ -116,7 +121,7 @@ public class EditModel : BasePageModel
                 ChangeType = ChangeType.SerialNumberChanged,
                 OldValue = existing.SerialNumber ?? "-",
                 NewValue = Asset.SerialNumber ?? "-",
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }
@@ -129,7 +134,7 @@ public class EditModel : BasePageModel
                 ChangeType = ChangeType.OwnerChanged,
                 OldValue = existing.Owner.ToString(),
                 NewValue = Asset.Owner.ToString(),
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }
@@ -145,7 +150,7 @@ public class EditModel : BasePageModel
                 ChangeType = ChangeType.CategoryChanged,
                 OldValue = oldCat?.Name ?? existing.CategoryId.ToString(),
                 NewValue = newCat?.Name ?? Asset.CategoryId.ToString(),
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }
@@ -160,7 +165,7 @@ public class EditModel : BasePageModel
                 ChangeType = ChangeType.BrandChanged,
                 OldValue = oldBrand?.Name ?? existing.BrandId.ToString(),
                 NewValue = newBrand?.Name ?? Asset.BrandId.ToString(),
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }
@@ -173,7 +178,7 @@ public class EditModel : BasePageModel
                 ChangeType = ChangeType.NoteAdded,
                 OldValue = "-",
                 NewValue = NewNote,
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }

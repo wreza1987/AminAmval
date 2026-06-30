@@ -7,13 +7,19 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace AssetKeeper.Pages.Assignments;
 
 [Authorize]
 public class CreateModel : BasePageModel
 {
-    public CreateModel(MyDbContext context) : base(context) { }
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public CreateModel(MyDbContext context, UserManager<ApplicationUser> userManager) : base(context) 
+    {
+        _userManager = userManager;    
+    }
 
     [BindProperty]
     public AssetAssignmentCreateDto AssignmentDto { get; set; } = new();
@@ -41,6 +47,9 @@ private async Task LoadAvailableAssets()
 
 public async Task<IActionResult> OnPostAsync()
 {
+    var currentUser = await _userManager.GetUserAsync(User);
+    int? currentEmployeeId = currentUser?.EmployeeId;
+
     if (!ModelState.IsValid)
     {
         await LoadAvailableAssets();   // فقط لیست را لود کن، مدل را ریست نکن
@@ -75,7 +84,6 @@ public async Task<IActionResult> OnPostAsync()
         return Page();
     }
 
-    // بقیه کد بدون تغییر...
     var assignment = new AssetAssignment
     {
         AssetId = AssignmentDto.AssetId,
@@ -84,7 +92,6 @@ public async Task<IActionResult> OnPostAsync()
         Notes = AssignmentDto.Notes,
         CreatedAt = DateTime.Now
     };
-
     _context.AssetAssignments.Add(assignment);
 
     // ثبت تحویل در تاریخچه
@@ -99,7 +106,7 @@ public async Task<IActionResult> OnPostAsync()
         ChangeType = ChangeType.AssignedToEmployee,
         OldValue = "انبار",
         NewValue = empLabel,
-        ChangedByEmployeeId = null,
+        ChangedByEmployeeId = currentEmployeeId,
         ChangeDate = DateTime.Now
     });
 

@@ -1,5 +1,6 @@
 ﻿@page
 @model AssetKeeper.Pages.Assignments.ReturnModel
+@using AssetKeeper.Shared
 @{
     ViewData["Title"] = "عودت اموال";
 }
@@ -22,7 +23,7 @@
         <div class="card-body">
             <h5>@Model.CurrentAssignment.Asset?.AssetCode - @Model.CurrentAssignment.Asset?.Name</h5>
             <p><strong>تحویل داده شده به:</strong> @Model.CurrentAssignment.Employee?.FirstName @Model.CurrentAssignment.Employee?.LastName</p>
-            <p><strong>تاریخ تحویل:</strong> @Model.CurrentAssignment.AssignmentDate.ToShortDateString()</p>
+            <p><strong>تاریخ تحویل:</strong> @Model.CurrentAssignment.AssignmentDate.ToPersian()</p>
         </div>
     </div>
 

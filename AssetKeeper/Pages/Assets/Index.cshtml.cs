@@ -35,6 +35,7 @@ public class IndexModel : BasePageModel
     [BindProperty(SupportsGet = true)] public List<string> FilterStatuses { get; set; } = new();
     [BindProperty(SupportsGet = true)] public new int Page { get; set; } = 1;
 
+
     public List<string> AllCategories { get; set; } = new();
     public List<string> AllBrands { get; set; } = new();
 
@@ -42,18 +43,6 @@ public class IndexModel : BasePageModel
     {
         AllCategories = await _context.Categories.OrderBy(c => c.Name).Select(c => c.Name).ToListAsync();
         AllBrands = await _context.Brands.OrderBy(b => b.Name).Select(b => b.Name).ToListAsync();
-
-        // // ✅ اگه هیچ فیلتری نداره، چیزی نمایش نده
-        // bool anyFilter = !string.IsNullOrWhiteSpace(FilterAssetCodeFrom) ||
-        //                 !string.IsNullOrWhiteSpace(FilterAssetCodeTo) ||
-        //                 !string.IsNullOrWhiteSpace(FilterName) ||
-        //                 FilterCategories.Any() ||
-        //                 FilterBrands.Any() ||
-        //                 FilterStatuses.Any();
-
-        // if (!anyFilter) return;
-
-        // HasSearched = true;
 
         var all = await _context.Assets
             .Include(a => a.Category)
@@ -80,14 +69,6 @@ public class IndexModel : BasePageModel
 
         if (!string.IsNullOrWhiteSpace(NormName))
             filtered = filtered.Where(a => TextHelper.Normalize(a.Name).Contains(NormName, StringComparison.OrdinalIgnoreCase));
-
-        // if (FilterCategories.Any())
-        //     filtered = filtered.Where(a => FilterCategories.Any(fc =>
-        //         TextHelper.Normalize(fc) == TextHelper.Normalize(a.Category?.Name)));
-
-        // if (FilterBrands.Any())
-        //     filtered = filtered.Where(a => FilterBrands.Any(fb =>
-        //         TextHelper.Normalize(fb) == TextHelper.Normalize(a.Brand?.Name)));
 
         if (FilterCategories?.Any() == true)
         {

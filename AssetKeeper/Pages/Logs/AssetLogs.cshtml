@@ -27,7 +27,7 @@
             {
                 <tr>
                     <td>@row</td>
-                    <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
+                    <td>@log.ChangeDate.ToPersian()</td>
                     <td>@log.ChangeDate.ToString("HH:mm")</td>
                     <td>@log.Asset?.AssetCode</td>
                     <td>@log.Asset?.Name</td>

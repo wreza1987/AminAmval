@@ -1,4 +1,5 @@
 @page
+@using AssetKeeper.Shared
 @model AssetKeeper.Pages.Account.MyAssetHistoryModel
 @{
     ViewData["Title"] = "گردش اموال من";
@@ -29,8 +30,8 @@ else
                 <tr>
                     <td>@item.Asset.AssetCode</td>
                     <td>@item.Asset.Name</td>
-                    <td>@item.AssignmentDate.ToString("yyyy/MM/dd")</td>
-                    <td>@(item.ReturnDate?.ToString("yyyy/MM/dd") ?? "—")</td>
+                    <td>@item.AssignmentDate.ToPersian()</td>
+                    <td>@(item.ReturnDate?.ToPersian() ?? "—")</td>
                     <td>
                         @if (item.ReturnDate == null)
                         {

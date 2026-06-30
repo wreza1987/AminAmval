@@ -1,4 +1,5 @@
 @page
+@using AssetKeeper.Shared
 @model AssetKeeper.Pages.Account.MyRequestsModel
 @{
     ViewData["Title"] = "درخواست من";
@@ -16,7 +17,7 @@
                     <div class="d-flex justify-content-end mb-2">
                         <div class="bg-primary text-white rounded p-2 px-3" style="max-width: 75%;">
                             <div>@req.Message</div>
-                            <div class="small opacity-75 mt-1">@req.CreatedAt.ToString("yyyy/MM/dd HH:mm")</div>
+                            <div class="small opacity-75 mt-1">@req.CreatedAt.ToPersian() @req.CreatedAt.ToString("HH:mm")</div>
                         </div>
                     </div>
                 }
@@ -26,7 +27,7 @@
                         <div class="bg-light border rounded p-2 px-3" style="max-width: 75%;">
                             <div class="small text-muted mb-1">@req.Employee.FirstName @req.Employee.LastName</div>
                             <div>@req.Message</div>
-                            <div class="small text-muted mt-1">@req.CreatedAt.ToString("yyyy/MM/dd HH:mm")</div>
+                            <div class="small text-muted mt-1">@req.CreatedAt.ToPersian() @req.CreatedAt.ToString("HH:mm")</div>
                         </div>
                     </div>
                 }

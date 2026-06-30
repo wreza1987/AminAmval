@@ -1,4 +1,5 @@
 @page
+@using AssetKeeper.Shared
 @model AssetKeeper.Pages.Account.ProfileModel
 @{
     ViewData["Title"] = "پروفایل من";
@@ -20,7 +21,7 @@
                 <div class="col-md-6">
                     <p><strong>دپارتمان:</strong> @Model.Employee.Department</p>
                     <p><strong>معاونت:</strong> @Model.Employee.VicePresidency</p>
-                    <p><strong>تاریخ شروع:</strong> @Model.Employee.StartDate.ToString("yyyy/MM/dd")</p>
+                    <p><strong>تاریخ شروع:</strong> @Model.Employee.StartDate.ToPersian()</p>
                 </div>
             </div>
         </div>

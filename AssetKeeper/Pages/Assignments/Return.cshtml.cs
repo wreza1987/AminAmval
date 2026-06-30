@@ -1,20 +1,25 @@
-﻿// file: AssetKeeper\AssetKeeper\Pages\Assignments\Return.cshtml.cs
-
-using AssetKeeper.Context;
+﻿using AssetKeeper.Context;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
+using AssetKeeper.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace AssetKeeper.Pages.Assignments;
 
 [Authorize]
 public class ReturnModel : BasePageModel
 {
-    public ReturnModel(MyDbContext context) : base(context) { }
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public ReturnModel(MyDbContext context, UserManager<ApplicationUser> userManager) : base(context)
+    {
+        _userManager = userManager;
+    }
 
     [BindProperty] public AssetAssignment CurrentAssignment { get; set; } = new();
     [BindProperty] public bool ReassignToAnother { get; set; } = false;
@@ -43,6 +48,9 @@ public class ReturnModel : BasePageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        var currentUser = await _userManager.GetUserAsync(User);
+        int? currentEmployeeId = currentUser?.EmployeeId;
+
         var assignment = await _context.AssetAssignments
             .Include(a => a.Asset)
             .Include(a => a.Employee)
@@ -64,7 +72,7 @@ public class ReturnModel : BasePageModel
 
         // ثبت عودت
         assignment.ReturnDate = CurrentAssignment.ReturnDate ?? DateTime.Now;
-        assignment.Notes += $" | عودت در {DateTime.Now:yyyy/MM/dd}";
+        assignment.Notes += $" | عودت در {DateTime.Now.ToPersian():yyyy/MM/dd}";
         assignment.Asset.Status = AssetStatus.InStock;
 
         _context.AssetHistory.Add(new AssetHistory
@@ -73,7 +81,7 @@ public class ReturnModel : BasePageModel
             ChangeType = ChangeType.ReturnedFromEmployee,
             OldValue = prevEmpLabel,
             NewValue = "انبار",
-            ChangedByEmployeeId = null,
+            ChangedByEmployeeId = currentEmployeeId,
             ChangeDate = DateTime.Now
         });
 
@@ -103,7 +111,7 @@ public class ReturnModel : BasePageModel
                 ChangeType = ChangeType.AssignedToEmployee,
                 OldValue = "انبار",
                 NewValue = newEmpLabel,
-                ChangedByEmployeeId = null,
+                ChangedByEmployeeId = currentEmployeeId,
                 ChangeDate = DateTime.Now
             });
         }

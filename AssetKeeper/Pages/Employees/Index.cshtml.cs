@@ -174,7 +174,7 @@ public class IndexModel : PageModel
             sheet.Cell(row, 4).Value = e.NationalCode;
             sheet.Cell(row, 5).Value = e.Department;
             sheet.Cell(row, 6).Value = e.VicePresidency;
-            sheet.Cell(row, 7).Value = e.StartDate.ToString("yyyy/MM/dd");
+            sheet.Cell(row, 7).Value = e.StartDate.ToPersian();
             sheet.Cell(row, 8).Value = EnumHelper.GetDisplayName(e.AccessLevel);
             row++;
         }

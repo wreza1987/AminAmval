@@ -1,4 +1,5 @@
 ﻿using AssetKeeper.Context;
+using AssetKeeper.Shared;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -21,8 +22,8 @@ public class CreateModel : PageModel
         _userManager = userManager;
     }
 
-    [BindProperty]
-    public Employee Employee { get; set; } = new();
+    [BindProperty] public Employee Employee { get; set; } = new();
+    [BindProperty] public string? StartDatePersian { get; set; }
 
     public void OnGet()
     {
@@ -32,6 +33,7 @@ public class CreateModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        Employee.StartDate = PersianDateHelper.FromPersian(StartDatePersian) ?? DateTime.Today;
         if (!ModelState.IsValid) return Page();
 
         if (await _context.Employees.AnyAsync(e => e.PersonnelCode == Employee.PersonnelCode))

@@ -95,7 +95,7 @@
                             {
                                 <tr>
                                     <td>@r1</td>
-                                    <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
+                                    <td>@log.ChangeDate.ToPersian()</td>
                                     <td>@log.ChangeDate.ToString("HH:mm")</td>
                                     <td>@EnumHelper.GetDisplayName(log.ChangeType)</td>
                                     <td>@log.OldValue</td>
@@ -148,7 +148,7 @@
                             {
                                 <tr>
                                     <td>@r2</td>
-                                    <td>@log.ChangeDate.ToString("yyyy/MM/dd")</td>
+                                    <td>@log.ChangeDate.ToPersian()</td>
                                     <td>@log.ChangeDate.ToString("HH:mm")</td>
                                     <td>@EnumHelper.GetDisplayName(log.ChangeType)</td>
                                     <td>@FormatStatusValue(log.OldValue)</td>
