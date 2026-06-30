@@ -4,12 +4,22 @@
 @model AssetKeeper.Pages.Employees.IndexModel
 @{
     ViewData["Title"] = "لیست پرسنل";
+    var accessLevel = User.FindFirst("AccessLevel")?.Value;
+    bool isAdmin = accessLevel == "Admin";
 }
+
 <div class="container-fluid mt-3">
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show">
             @TempData["Success"]
+            @if (TempData["ErrorFileUrl"] != null)
+            {
+                <br />
+                <a href="@TempData["ErrorFileUrl"]" class="btn btn-sm btn-warning mt-2" download>
+                    📥 دانلود فایل ردیف‌های معیوب
+                </a>
+            }
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
@@ -21,129 +31,191 @@
         </div>
     }
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>مدیریت پرسنل <small class="text-muted fs-6">(@Model.TotalCount نفر)</small></h1>
-        <div class="d-flex gap-2">
-            <a asp-page="Create" class="btn btn-success">+ پرسنل جدید</a>
-            <form method="post" asp-page-handler="Import" enctype="multipart/form-data" class="d-inline">
-                <div class="input-group">
-                    <input type="file" name="ExcelFile" class="form-control" accept=".xlsx" />
-                    <button type="submit" class="btn btn-primary">آپلود اکسل</button>
+    <h1 class="mb-4">مدیریت پرسنل <small class="text-muted fs-6">(@Model.TotalCount نفر)</small></h1>
+
+    <!-- ورود اطلاعات -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-auto fw-bold">ورود اطلاعات:</div>
+                <div class="col-6 col-md-auto">
+                    <a asp-page="Create" class="btn btn-success w-100">پرسنل جدید</a>
                 </div>
-            </form>
-            <a href="/Data/Seed/Employees.xlsx" class="btn btn-secondary" download>📥 فایل نمونه</a>
+                <div class="col-12 col-md-4">
+                    <form method="post" asp-page-handler="Import" enctype="multipart/form-data">
+                        <div class="input-group">
+                            <input type="file" name="ExcelFile" class="form-control" accept=".xlsx" />
+                            <button type="submit" class="btn btn-primary">آپلود اکسل</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-6 col-md-auto">
+                    <a href="/Data/Seed/پرسنل.xlsx" class="btn btn-secondary w-100" download>📥 فایل نمونه</a>
+                </div>
+                <div class="col-12 col-md text-muted small">
+                    برای کیفیت بهتر، از فایل نمونه استفاده کنید
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- فیلترها -->
-    <form method="get">
-        <div class="row g-2 align-items-end mb-3">
-
-            <!-- کد پرسنلی -->
-            <div class="col-auto">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                    <label class="form-label small fw-bold mb-0">کد پرسنلی</label>
-                    <small class="text-muted">(یک فیلد = شامل، دو فیلد = بین)</small>
+    <!-- جست‌وجوی اطلاعات -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <span class="fw-bold">جست‌وجوی پرسنل:</span>
+                    <button type="submit" class="btn btn-primary btn-sm">🔍 جست‌وجو</button>
+                    <a asp-page="Index" class="btn btn-outline-secondary btn-sm">✖ پاک</a>
                 </div>
 
-                <div class="input-group input-group-sm">
-                    <input name="FilterCodeFrom" value="@Model.FilterCodeFrom"
-                        class="form-control" style="width:90px" placeholder="از..." />
-                    <span class="input-group-text">تا</span>
-                    <input name="FilterCodeTo" value="@Model.FilterCodeTo"
-                        class="form-control" style="width:90px" placeholder="تا..." />
+                <div class="row g-2">
+
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <label class="form-label small fw-bold mb-1">کد پرسنلی</label>
+                        <div class="input-group input-group-sm">
+                            <input name="FilterCodeFrom" value="@Model.FilterCodeFrom"
+                                class="form-control" placeholder="شامل/از" />
+                            <span class="input-group-text">تا</span>
+                            <input name="FilterCodeTo" value="@Model.FilterCodeTo"
+                                class="form-control" placeholder="تا" />
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <label class="form-label small fw-bold mb-1">نام خانوادگی</label>
+                        <input name="FilterLastName" value="@Model.FilterLastName"
+                            class="form-control form-control-sm" placeholder="نام خانوادگی" />
+                    </div>
+
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <label class="form-label small fw-bold mb-1">نام</label>
+                        <input name="FilterFirstName" value="@Model.FilterFirstName"
+                            class="form-control form-control-sm" placeholder="نام" />
+                    </div>
+
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <label class="form-label small fw-bold mb-1">کد ملی</label>
+                        <input name="FilterNationalCode" value="@Model.FilterNationalCode"
+                            class="form-control form-control-sm" placeholder="شامل" />
+                    </div>
+
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <label class="form-label small fw-bold mb-1">واحد / دپارتمان</label>
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle w-100"
+                                    data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                @(Model.FilterDepartments.Any() ? $"{Model.FilterDepartments.Count} انتخاب" : "همه")
+                            </button>
+                            <ul class="dropdown-menu p-2" style="max-height:250px;overflow-y:auto">
+                                <li>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="deptAll"
+                                            onchange="toggleAll('dept-cb', this)"
+                                            @(!Model.FilterDepartments.Any() ? "checked" : "") />
+                                        <label class="form-check-label" for="deptAll">همه</label>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider my-1" /></li>
+                                @foreach (var dept in Model.AllDepartments)
+                                {
+                                    <li>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input dept-cb"
+                                                name="FilterDepartments" value="@dept" id="d_@dept"
+                                                @(Model.FilterDepartments.Contains(dept) ? "checked" : "")
+                                                onchange="syncAll('dept-cb','deptAll')" />
+                                            <label class="form-check-label" for="d_@dept">@dept</label>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- ✅ معاونت dropdown -->
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <label class="form-label small fw-bold mb-1">معاونت</label>
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle w-100"
+                                    data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                @(Model.FilterVicePresidencies.Any() ? $"{Model.FilterVicePresidencies.Count} انتخاب" : "همه")
+                            </button>
+                            <ul class="dropdown-menu p-2" style="max-height:250px;overflow-y:auto">
+                                <li>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="viceAll"
+                                            onchange="toggleAll('vice-cb', this)"
+                                            @(!Model.FilterVicePresidencies.Any() ? "checked" : "") />
+                                        <label class="form-check-label" for="viceAll">همه</label>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider my-1" /></li>
+                                @foreach (var vice in Model.AllVicePresidencies)
+                                {
+                                    <li>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input vice-cb"
+                                                name="FilterVicePresidencies" value="@vice" id="v_@vice"
+                                                @(Model.FilterVicePresidencies.Contains(vice) ? "checked" : "")
+                                                onchange="syncAll('vice-cb','viceAll')" />
+                                            <label class="form-check-label" for="v_@vice">@vice</label>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <label class="form-label small fw-bold mb-1">سطح دسترسی</label>
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle w-100"
+                                    data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                @(Model.FilterAccessLevels.Any() ? $"{Model.FilterAccessLevels.Count} انتخاب" : "همه")
+                            </button>
+                            <ul class="dropdown-menu p-2">
+                                <li>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="levelAll"
+                                            onchange="toggleAll('level-cb', this)"
+                                            @(!Model.FilterAccessLevels.Any() ? "checked" : "") />
+                                        <label class="form-check-label" for="levelAll">همه</label>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider my-1" /></li>
+                                @foreach (var lvl in Enum.GetValues<EmployeeAccessLevel>())
+                                {
+                                    <li>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input level-cb"
+                                                name="FilterAccessLevels" value="@lvl" id="lv_@lvl"
+                                                @(Model.FilterAccessLevels.Contains(lvl.ToString()) ? "checked" : "")
+                                                onchange="syncAll('level-cb','levelAll')" />
+                                            <label class="form-check-label" for="lv_@lvl">@EnumHelper.GetDisplayName(lvl)</label>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
-                
-            </div>
+            </form>
+        </div>
+    </div>
 
-            <!-- نام -->
-            <div class="col-auto">
-                <label class="form-label small fw-bold mb-1">نام / نام خانوادگی</label>
-                <input name="FilterName" value="@Model.FilterName"
-                    class="form-control form-control-sm" style="width:150px" placeholder="شامل..." />
-            </div>
-
-            <!-- کد ملی -->
-            <div class="col-auto">
-                <label class="form-label small fw-bold mb-1">کد ملی</label>
-                <input name="FilterNationalCode" value="@Model.FilterNationalCode"
-                    class="form-control form-control-sm" style="width:130px" placeholder="شامل..." />
-            </div>
-
-            <!-- واحد dropdown -->
-            <div class="col-auto">
-                <label class="form-label small fw-bold mb-1">واحد / دپارتمان</label>
-                <div class="dropdown">
-                    <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                            data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                        @(Model.FilterDepartments.Any() ? $"{Model.FilterDepartments.Count} انتخاب شده" : "همه")
-                    </button>
-                    <ul class="dropdown-menu p-2" style="min-width:180px;max-height:250px;overflow-y:auto">
-                        <li>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="deptAll"
-                                    onchange="toggleAll('dept-cb', this)"
-                                    @(!Model.FilterDepartments.Any() ? "checked" : "") />
-                                <label class="form-check-label" for="deptAll">همه</label>
-                            </div>
-                        </li>
-                        <li><hr class="dropdown-divider my-1" /></li>
-                        @foreach (var dept in Model.AllDepartments)
-                        {
-                            <li>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input dept-cb"
-                                        name="FilterDepartments" value="@dept" id="d_@dept"
-                                        @(Model.FilterDepartments.Contains(dept) ? "checked" : "")
-                                        onchange="syncAll('dept-cb','deptAll')" />
-                                    <label class="form-check-label" for="d_@dept">@dept</label>
-                                </div>
-                            </li>
-                        }
-                    </ul>
+    <!-- استخراج اطلاعات -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-auto fw-bold">استخراج اطلاعات:</div>
+                <div class="col-6 col-md-auto">
+                    <a asp-page-handler="Export" class="btn btn-success w-100">📊 دانلود اکسل</a>
                 </div>
-            </div>
-
-            <!-- سطح دسترسی dropdown -->
-            <div class="col-auto">
-                <label class="form-label small fw-bold mb-1">سطح دسترسی</label>
-                <div class="dropdown">
-                    <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                            data-bs-toggle="dropdown" data-bs-auto-close="outside">
-                        @(Model.FilterAccessLevels.Any() ? $"{Model.FilterAccessLevels.Count} انتخاب شده" : "همه")
-                    </button>
-                    <ul class="dropdown-menu p-2" style="min-width:160px">
-                        <li>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="levelAll"
-                                    onchange="toggleAll('level-cb', this)"
-                                    @(!Model.FilterAccessLevels.Any() ? "checked" : "") />
-                                <label class="form-check-label" for="levelAll">همه</label>
-                            </div>
-                        </li>
-                        <li><hr class="dropdown-divider my-1" /></li>
-                        @foreach (var lvl in Enum.GetValues<EmployeeAccessLevel>())
-                        {
-                            <li>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input level-cb"
-                                        name="FilterAccessLevels" value="@lvl" id="lv_@lvl"
-                                        @(Model.FilterAccessLevels.Contains(lvl.ToString()) ? "checked" : "")
-                                        onchange="syncAll('level-cb','levelAll')" />
-                                    <label class="form-check-label" for="lv_@lvl">@EnumHelper.GetDisplayName(lvl)</label>
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary btn-sm">🔍 فیلتر</button>
-                <a asp-page="Index" class="btn btn-outline-secondary btn-sm">✖ پاک</a>
             </div>
         </div>
-    </form>
+    </div>
 
     <!-- جدول -->
     @if (!Model.HasSearched)
@@ -162,10 +234,15 @@
             <thead class="table-dark">
                 <tr>
                     <th>کد پرسنلی</th>
-                    <th>نام و نام خانوادگی</th>
+                    <th>نام خانوادگی</th>
+                    <th>نام</th>
                     <th>کد ملی</th>
                     <th>واحد</th>
-                    <th>سطح دسترسی</th>
+                    <th>معاونت</th>
+                    @if (isAdmin)
+                    {
+                        <th>سطح دسترسی</th>
+                    }
                     <th>عملیات</th>
                 </tr>
             </thead>
@@ -174,18 +251,24 @@
                 {
                     <tr>
                         <td>@item.PersonnelCode</td>
-                        <td>@item.FirstName @item.LastName</td>
+                        <td>@item.LastName</td>
+                        <td>@item.FirstName</td>
                         <td>@item.NationalCode</td>
                         <td>@item.Department</td>
-                        <td>
-                            <span class="badge bg-@(
-                                item.AccessLevel == EmployeeAccessLevel.Admin ? "danger"
-                                : item.AccessLevel == EmployeeAccessLevel.WarehouseKeeper ? "warning"
-                                : item.AccessLevel == EmployeeAccessLevel.Normal ? "success"
-                                : "secondary")">
-                                @EnumHelper.GetDisplayName(item.AccessLevel)
-                            </span>
-                        </td>
+                        <td>@(string.IsNullOrWhiteSpace(item.VicePresidency) ? "ندارد" : item.VicePresidency)</td>
+                        @if (isAdmin)
+                        {
+                            <td>
+                                <span class="badge bg-@(
+                                    item.AccessLevel == EmployeeAccessLevel.Admin ? "danger"
+                                    : item.AccessLevel == EmployeeAccessLevel.WarehouseKeeper ? "warning"
+                                    : item.AccessLevel == EmployeeAccessLevel.Normal ? "success"
+                                    : "secondary")">
+                                    @EnumHelper.GetDisplayName(item.AccessLevel)
+                                </span>
+                            </td>
+                        }
+                        
                         <td>
                             <a asp-page="Edit" asp-route-id="@item.Id" class="@ThemeColors.Buttons.WarningSm">ویرایش</a>
                         </td>
@@ -205,7 +288,8 @@
                         <a class="page-link" asp-page="Index"
                            asp-route-Page="@i"
                            asp-route-FilterCode="@Model.FilterCodeFrom"
-                           asp-route-FilterName="@Model.FilterName">@i</a>
+                           asp-route-FilterFirstName="@Model.FilterFirstName"
+                           asp-route-FilterLastName="@Model.FilterLastName">@i</a>
                     </li>
                 }
             </ul>

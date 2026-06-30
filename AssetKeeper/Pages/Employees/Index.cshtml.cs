@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using AssetKeeper.Context;
 using AssetKeeper.Shared;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
-using Microsoft.AspNetCore.Authorization;
+using ClosedXML.Excel;
 
 namespace AssetKeeper.Pages.Employees;
 
@@ -13,7 +15,13 @@ namespace AssetKeeper.Pages.Employees;
 public class IndexModel : PageModel
 {
     private readonly MyDbContext _context;
-    public IndexModel(MyDbContext context) => _context = context;
+    private readonly IWebHostEnvironment _webHostEnvironment;
+
+    public IndexModel(MyDbContext context, IWebHostEnvironment webHostEnvironment)
+    {
+        _context = context;
+        _webHostEnvironment = webHostEnvironment;
+    }
 
     public IList<Employee> Employees { get; set; } = new List<Employee>();
     public List<string> AllDepartments { get; set; } = new();
@@ -26,27 +34,24 @@ public class IndexModel : PageModel
 
     [BindProperty(SupportsGet = true)] public string? FilterCodeFrom { get; set; }
     [BindProperty(SupportsGet = true)] public string? FilterCodeTo { get; set; }
-    [BindProperty(SupportsGet = true)] public string? FilterName { get; set; }
+    [BindProperty(SupportsGet = true)] public string? FilterFirstName { get; set; }
+    [BindProperty(SupportsGet = true)] public string? FilterLastName { get; set; }
     [BindProperty(SupportsGet = true)] public string? FilterNationalCode { get; set; }
     [BindProperty(SupportsGet = true)] public List<string> FilterDepartments { get; set; } = new();
     [BindProperty(SupportsGet = true)] public List<string> FilterAccessLevels { get; set; } = new();
     [BindProperty(SupportsGet = true)] public new int Page { get; set; } = 1;
+    [BindProperty(SupportsGet = true)] public List<string> FilterVicePresidencies { get; set; } = new();
+    public List<string> AllVicePresidencies { get; set; } = new();
 
     public async Task OnGetAsync()
     {
         AllDepartments = await _context.Employees
             .Select(e => e.Department).Distinct().OrderBy(d => d).ToListAsync();
 
-        // bool anyFilter = !string.IsNullOrWhiteSpace(FilterCodeFrom) ||
-        //                 !string.IsNullOrWhiteSpace(FilterCodeTo) ||
-        //                 !string.IsNullOrWhiteSpace(FilterName) ||
-        //                 !string.IsNullOrWhiteSpace(FilterNationalCode) ||
-        //                 FilterDepartments.Any() ||
-        //                 FilterAccessLevels.Any();
-
-        // if (!anyFilter) return;
-
-        // HasSearched = true;
+        // لیست معاونت‌ها (با "ندارد" برای خالی‌ها)
+        AllVicePresidencies = await _context.Employees
+            .Select(e => string.IsNullOrWhiteSpace(e.VicePresidency) ? "ندارد" : e.VicePresidency)
+            .Distinct().OrderBy(v => v).ToListAsync();
         
         var all = await _context.Employees
             .OrderByDescending(e => e.CreatedAt)
@@ -56,7 +61,8 @@ public class IndexModel : PageModel
 
         var NormCodeFrom    = TextHelper.Normalize(FilterCodeFrom);
         var NormCodeTo      = TextHelper.Normalize(FilterCodeTo);
-        var NormName        = TextHelper.Normalize(FilterName);
+        var NormFirstName        = TextHelper.Normalize(FilterFirstName);
+        var NormLastName        = TextHelper.Normalize(FilterLastName);
         var NormNationalCode = TextHelper.Normalize(FilterNationalCode);
 
         if (!string.IsNullOrWhiteSpace(NormCodeFrom) && string.IsNullOrWhiteSpace(NormCodeTo))
@@ -69,10 +75,16 @@ public class IndexModel : PageModel
                 filtered = filtered.Where(e => string.Compare(TextHelper.Normalize(e.PersonnelCode), NormCodeTo, StringComparison.OrdinalIgnoreCase) <= 0);
         }
 
-        if (!string.IsNullOrWhiteSpace(NormName))
-            filtered = filtered.Where(e =>
-                TextHelper.Normalize(e.FirstName).Contains(NormName, StringComparison.OrdinalIgnoreCase) ||
-                TextHelper.Normalize(e.LastName).Contains(NormName, StringComparison.OrdinalIgnoreCase));
+        if (!string.IsNullOrWhiteSpace(NormFirstName))
+        {
+            filtered = filtered.Where(e => 
+                TextHelper.Normalize(e.FirstName).Contains(NormFirstName, StringComparison.OrdinalIgnoreCase));
+        }
+        if (!string.IsNullOrWhiteSpace(NormLastName))
+        {
+            filtered = filtered.Where(e => 
+                TextHelper.Normalize(e.LastName).Contains(NormLastName, StringComparison.OrdinalIgnoreCase));
+        }
 
         if (!string.IsNullOrWhiteSpace(NormNationalCode))
             filtered = filtered.Where(e => TextHelper.Normalize(e.NationalCode).Contains(NormNationalCode, StringComparison.OrdinalIgnoreCase));
@@ -80,6 +92,16 @@ public class IndexModel : PageModel
         if (FilterDepartments.Any())
             filtered = filtered.Where(e => FilterDepartments.Any(fd =>
                 TextHelper.Normalize(fd) == TextHelper.Normalize(e.Department)));
+
+        // فیلتر معاونت
+        if (FilterVicePresidencies.Any())
+        {
+            filtered = filtered.Where(e =>
+            {
+                var vp = string.IsNullOrWhiteSpace(e.VicePresidency) ? "ندارد" : e.VicePresidency;
+                return FilterVicePresidencies.Contains(vp);
+            });
+        }    
 
         if (FilterAccessLevels.Any())
         {
@@ -107,17 +129,64 @@ public class IndexModel : PageModel
             return RedirectToPage();
         }
 
-        // ✅ چک کردن سطح دسترسی کاربر جاری
         bool isWarehouse = User.FindFirst("AccessLevel")?.Value == "WarehouseKeeper";
 
-        var (imported, skipped, error) = await DataSeeder.ImportEmployeesFromExcelAsync(
-            _context, ExcelFile, isWarehouse);
+        var (imported, skipped, invalid, errorFile, error) =
+            await ExcelImportHelper.ImportEmployeesFromExcelAsync(_context, ExcelFile, isWarehouse);
 
-        if (error != null)
-            TempData["Error"] = error;
-        else
-            TempData["Success"] = $"✅ {imported} نفر ثبت شد. {(skipped > 0 ? $"⏭ {skipped} نفر تکراری نادیده گرفته شد." : "")}";
+        if (error != null) TempData["Error"] = error;
+
+        TempData["Success"] = $"✅ {imported} نفر با موفقیت ثبت شد." +
+                            (invalid > 0 ? $" ⚠️ {invalid} سطر معیوب بود." : "");
+
+        if (errorFile != null)
+        {
+            var fileName = $"خطاهای_پرسنل_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            var path = Path.Combine(_webHostEnvironment.WebRootPath, "Data", "Errors", fileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            await System.IO.File.WriteAllBytesAsync(path, errorFile);
+            TempData["ErrorFileUrl"] = $"/Data/Errors/{fileName}";
+        }
 
         return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnGetExportAsync()
+    {
+        var employees = await _context.Employees.OrderBy(e => e.PersonnelCode).ToListAsync();
+
+        using var workbook = new XLWorkbook();
+        var sheet = workbook.Worksheets.Add("پرسنل");
+
+        var headers = new[] { "کد پرسنلی", "نام", "نام خانوادگی", "کد ملی",
+            "دپارتمان/واحد", "معاونت", "تاریخ شروع", "سطح دسترسی" };
+
+        for (int i = 0; i < headers.Length; i++)
+            sheet.Cell(1, i + 1).Value = headers[i];
+        sheet.Row(1).Style.Font.Bold = true;
+
+        int row = 2;
+        foreach (var e in employees)
+        {
+            sheet.Cell(row, 1).Value = e.PersonnelCode;
+            sheet.Cell(row, 2).Value = e.FirstName;
+            sheet.Cell(row, 3).Value = e.LastName;
+            sheet.Cell(row, 4).Value = e.NationalCode;
+            sheet.Cell(row, 5).Value = e.Department;
+            sheet.Cell(row, 6).Value = e.VicePresidency;
+            sheet.Cell(row, 7).Value = e.StartDate.ToString("yyyy/MM/dd");
+            sheet.Cell(row, 8).Value = EnumHelper.GetDisplayName(e.AccessLevel);
+            row++;
+        }
+
+        sheet.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        stream.Position = 0;
+
+        return File(stream.ToArray(),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"پرسنل_{DateTime.Now:yyyyMMdd}.xlsx");
     }
 }

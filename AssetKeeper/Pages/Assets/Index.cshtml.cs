@@ -1,16 +1,25 @@
-﻿﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using AssetKeeper.Context;
 using AssetKeeper.Shared;
 using AssetKeeper.Domain.Entities;
 using AssetKeeper.Domain.Enums;
-using Microsoft.AspNetCore.Authorization;
+using ClosedXML.Excel;
+
 namespace AssetKeeper.Pages.Assets;
 [Authorize]
 public class IndexModel : BasePageModel
 {
-    public IndexModel(MyDbContext context) : base(context) { }
+    // public IndexModel(MyDbContext context) : base(context) { }
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    public IndexModel(MyDbContext context, IWebHostEnvironment webHostEnvironment) : base(context)
+    {
+        _webHostEnvironment = webHostEnvironment;
+    }
+
     public IList<Asset> Assets { get; set; } = new List<Asset>();
     public int PageNumber { get; set; } = 1;
     public int TotalPages { get; set; }
@@ -121,12 +130,23 @@ public class IndexModel : BasePageModel
             return RedirectToPage();
         }
 
-        var (imported, skipped, error) = await DataSeeder.ImportAssetsFromExcelAsync(_context, ExcelFile);
+        var (imported, skipped, invalid, errorFile, error) =
+            await ExcelImportHelper.ImportAssetsFromExcelAsync(_context, ExcelFile);
 
         if (error != null)
             TempData["Error"] = error;
-        else
-            TempData["Success"] = $"✅ {imported} رکورد ثبت شد. {(skipped > 0 ? $"⏭ {skipped} رکورد تکراری نادیده گرفته شد." : "")}";
+
+        TempData["Success"] = $"✅ {imported} رکورد ثبت شد." +
+            (invalid > 0 ? $" ⚠️ {invalid} سطر معیوب بود." : "");
+
+        if (errorFile != null)
+        {
+            var fileName = $"خطاهای_اموال_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+            var path = Path.Combine(_webHostEnvironment.WebRootPath, "Data", "Errors", fileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            await System.IO.File.WriteAllBytesAsync(path, errorFile);
+            TempData["ErrorFileUrl"] = $"/Data/Errors/{fileName}";
+        }
 
         return RedirectToPage();
     }

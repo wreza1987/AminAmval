@@ -120,10 +120,13 @@ document.querySelectorAll('.permission-toggle').forEach(cb => {
             },
             body: `pageKey=${this.dataset.page}&level=${this.dataset.level}&isAllowed=${this.checked}`
         });
+
         const data = await res.json();
         if (!data.success) {
-            this.checked = !this.checked; // برگشت به حالت قبل
+            this.checked = !this.checked;
             alert('خطا در ذخیره');
+        } else {
+            console.log('تغییرات ذخیره شد'); // برای تست
         }
     });
 });

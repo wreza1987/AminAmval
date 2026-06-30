@@ -48,21 +48,48 @@ public class AccessLevelsModel : PageModel
     }
 
     // تغییر دسترسی صفحه
-    public async Task<IActionResult> OnPostTogglePermissionAsync(
-        string pageKey, EmployeeAccessLevel level, bool isAllowed)
+    // public async Task<IActionResult> OnPostTogglePermissionAsync(
+    //     string pageKey, EmployeeAccessLevel level, bool isAllowed)
+    // {
+    //     var perm = await _context.PagePermissions
+    //         .FirstOrDefaultAsync(p => p.PageKey == pageKey && p.AccessLevel == level);
+
+    //     if (perm != null)
+    //     {
+    //         perm.IsAllowed = isAllowed;
+    //         await _context.SaveChangesAsync();
+    //         _permissionService.ClearCache();
+    //     }
+
+    //     return new JsonResult(new { success = true });
+    // }
+
+public async Task<IActionResult> OnPostTogglePermissionAsync(
+    string pageKey, 
+    EmployeeAccessLevel level, 
+    bool isAllowed)
+{
+    Console.WriteLine($"=== Toggle Called: Page={pageKey}, Level={level}, Allowed={isAllowed} ==="); // لاگ
+
+    var perm = await _context.PagePermissions
+        .FirstOrDefaultAsync(p => p.PageKey == pageKey && p.AccessLevel == level);
+
+    if (perm != null)
     {
-        var perm = await _context.PagePermissions
-            .FirstOrDefaultAsync(p => p.PageKey == pageKey && p.AccessLevel == level);
-
-        if (perm != null)
-        {
-            perm.IsAllowed = isAllowed;
-            await _context.SaveChangesAsync();
-            _permissionService.ClearCache();
-        }
-
-        return new JsonResult(new { success = true });
+        perm.IsAllowed = isAllowed;
+        await _context.SaveChangesAsync();
+        _permissionService.ClearCache();
+        Console.WriteLine("تغییرات ذخیره شد.");
     }
+    else
+    {
+        Console.WriteLine("رکورد Permission پیدا نشد!");
+    }
+
+    return new JsonResult(new { success = true });
+}
+
+
 
     private async Task LoadAsync()
     {

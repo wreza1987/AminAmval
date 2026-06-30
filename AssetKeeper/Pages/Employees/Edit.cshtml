@@ -55,7 +55,14 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">واحد / دپارتمان <span class="text-danger">*</span></label>
                 <input asp-for="Employee.Department" class="form-control" required />
+                <span asp-validation-for="Employee.Department" class="text-danger"></span>
             </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">معاونت</label>
+                <input asp-for="Employee.VicePresidency" class="form-control" />
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">تاریخ شروع به کار</label>
                 <input asp-for="Employee.StartDate" type="date" class="form-control" />

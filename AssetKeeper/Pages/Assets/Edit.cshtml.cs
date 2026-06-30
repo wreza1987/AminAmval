@@ -13,13 +13,17 @@ namespace AssetKeeper.Pages.Assets;
 [Authorize]
 public class EditModel : BasePageModel
 {
-    public EditModel(MyDbContext context) : base(context) { }
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    public EditModel(MyDbContext context, IWebHostEnvironment webHostEnvironment) : base(context)
+    {
+        _webHostEnvironment = webHostEnvironment;
+    }
 
-    [BindProperty]
-    public Asset Asset { get; set; } = new();
+    [BindProperty] public Asset Asset { get; set; } = new();
 
-    [BindProperty]
-    public string? NewNote { get; set; }
+    [BindProperty] public string? NewNote { get; set; }
+
+    [BindProperty] public bool DeleteImage { get; set; } = false;
 
     public SelectList Categories { get; set; } = null!;
     public SelectList Brands { get; set; } = null!;
@@ -28,8 +32,6 @@ public class EditModel : BasePageModel
 
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        // TempData.Remove("Success");
-
         var asset = await _context.Assets
             .Include(a => a.History)
                 .ThenInclude(h => h.ChangedByEmployee)
@@ -49,7 +51,6 @@ public class EditModel : BasePageModel
         ModelState.Remove("Asset.Category");
         ModelState.Remove("Asset.Brand");
 
-        // نرمال‌سازی سریال
         Asset.SerialNumber = NormalizeSerial(Asset.SerialNumber);
 
         if (await _context.Assets.AnyAsync(a => a.AssetCode == Asset.AssetCode && a.Id != Asset.Id))
@@ -185,6 +186,37 @@ public class EditModel : BasePageModel
         existing.CategoryId = Asset.CategoryId;
         existing.BrandId = Asset.BrandId;
         // existing.Status دست نمی‌خوره
+
+        // حذف تصویر
+        if (DeleteImage && !string.IsNullOrEmpty(existing.ImagePath))
+        {
+            var oldPath = Path.Combine(_webHostEnvironment.WebRootPath, 
+                existing.ImagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+            if (System.IO.File.Exists(oldPath))
+                System.IO.File.Delete(oldPath);
+            existing.ImagePath = null;
+        }
+
+        // آپلود تصویر جدید
+        if (Asset.ImageFile != null && Asset.ImageFile.Length > 0)
+        {
+            // حذف تصویر قبلی اگه وجود داشت
+            if (!string.IsNullOrEmpty(existing.ImagePath))
+            {
+                var oldPath = Path.Combine(_webHostEnvironment.WebRootPath,
+                    existing.ImagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                if (System.IO.File.Exists(oldPath))
+                    System.IO.File.Delete(oldPath);
+            }
+
+            var uploads = Path.Combine(_webHostEnvironment.WebRootPath, "images", "assets");
+            Directory.CreateDirectory(uploads);
+            var fileName = Guid.NewGuid() + "_" + Asset.ImageFile.FileName;
+            var path = Path.Combine(uploads, fileName);
+            using var stream = new FileStream(path, FileMode.Create);
+            await Asset.ImageFile.CopyToAsync(stream);
+            existing.ImagePath = "/images/assets/" + fileName;
+        }
 
         await _context.SaveChangesAsync();
 
